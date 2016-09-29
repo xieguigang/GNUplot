@@ -1,5 +1,6 @@
 Imports System.Diagnostics
 Imports System.IO
+Imports System.Threading
 Imports Microsoft.VisualBasic
 Imports Microsoft.VisualBasic.Language
 
@@ -7,6 +8,7 @@ Imports Microsoft.VisualBasic.Language
 ''' 
 ''' </summary>
 Public Class GnuPlot
+
     Public Shared PathToGnuplot As String = "C:\Program Files (x86)\gnuplot\bin"
     Private Shared ExtPro As Process
     Private Shared GnupStWr As StreamWriter
@@ -14,15 +16,7 @@ Public Class GnuPlot
     Private Shared SPlotBuffer As List(Of StoredPlot)
     Private Shared ReplotWithSplot As Boolean
 
-    Public Shared Property Hold() As Boolean
-        Get
-            Return m_Hold
-        End Get
-        Private Set
-            m_Hold = Value
-        End Set
-    End Property
-    Private Shared m_Hold As Boolean
+    Public Shared Property Hold As Boolean
 
     Shared Sub New()
         If PathToGnuplot(PathToGnuplot.Length - 1).ToString() <> "\" Then
@@ -248,10 +242,10 @@ Public Class GnuPlot
                     Else
                         plotstring += (plot__1 & p.[Function] & " " & p.Options)
                     End If
-                    Exit Select
+
                 Case PlotTypes.PlotXY, PlotTypes.PlotY
                     plotstring += (plot__1 & """-"" " & p.Options)
-                    Exit Select
+
                 Case PlotTypes.ContourFileOrFunction
                     contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
                     makeContourFile((If(p.File IsNot Nothing, plotPath(p.File), p.[Function])), contfile)
@@ -259,7 +253,7 @@ Public Class GnuPlot
                         setContourLabels(contfile)
                     End If
                     plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-                    Exit Select
+
                 Case PlotTypes.ContourXYZ
                     contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
                     makeContourFile(p.X, p.Y, p.Z, contfile)
@@ -267,7 +261,7 @@ Public Class GnuPlot
                         setContourLabels(contfile)
                     End If
                     plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-                    Exit Select
+
                 Case PlotTypes.ContourZZ
                     contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
                     makeContourFile(p.ZZ, contfile)
@@ -275,7 +269,7 @@ Public Class GnuPlot
                         setContourLabels(contfile)
                     End If
                     plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-                    Exit Select
+
                 Case PlotTypes.ContourZ
                     contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
                     makeContourFile(p.YSize, p.Z, contfile)
@@ -283,7 +277,7 @@ Public Class GnuPlot
                         setContourLabels(contfile)
                     End If
                     plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-                    Exit Select
+
 
 
                 Case PlotTypes.ColorMapFileOrFunction
@@ -292,13 +286,13 @@ Public Class GnuPlot
                     Else
                         plotstring += (plot__1 & p.[Function] & " with image " & p.Options)
                     End If
-                    Exit Select
+
                 Case PlotTypes.ColorMapXYZ, PlotTypes.ColorMapZ
                     plotstring += (plot__1 & """-"" " & " with image " & p.Options)
-                    Exit Select
+
                 Case PlotTypes.ColorMapZZ
                     plotstring += (plot__1 & """-"" " & "matrix with image " & p.Options)
-                    Exit Select
+
             End Select
             If i = 0 Then
                 plot__1 = ", "
@@ -312,24 +306,24 @@ Public Class GnuPlot
                 Case PlotTypes.PlotXY
                     WriteData(p.X, p.Y, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.PlotY
                     WriteData(p.Y, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.ColorMapXYZ
                     WriteData(p.X, p.Y, p.Z, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.ColorMapZ
                     WriteData(p.YSize, p.Z, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.ColorMapZZ
                     WriteData(p.ZZ, GnupStWr, False)
                     GnupStWr.WriteLine("e")
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
 
             End Select
         Next
@@ -352,13 +346,13 @@ Public Class GnuPlot
                     Else
                         plotstring += (splot__1 & p.[Function] & defopts & p.Options)
                     End If
-                    Exit Select
+
                 Case PlotTypes.SplotXYZ, PlotTypes.SplotZ
                     plotstring += (splot__1 & """-"" " & defopts & p.Options)
-                    Exit Select
+
                 Case PlotTypes.SplotZZ
                     plotstring += (splot__1 & """-"" matrix " & defopts & p.Options)
-                    Exit Select
+
             End Select
             If i = 0 Then
                 splot__1 = ", "
@@ -372,16 +366,16 @@ Public Class GnuPlot
                 Case PlotTypes.SplotXYZ
                     WriteData(p.X, p.Y, p.Z, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.SplotZZ
                     WriteData(p.ZZ, GnupStWr, False)
                     GnupStWr.WriteLine("e")
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
                 Case PlotTypes.SplotZ
                     WriteData(p.YSize, p.Z, GnupStWr, False)
                     GnupStWr.WriteLine("e")
-                    Exit Select
+
             End Select
         Next
         GnupStWr.Flush()
@@ -472,7 +466,11 @@ Public Class GnuPlot
         GnupStWr.Flush()
     End Sub
 
-    'these makecontourFile functions should probably be merged into one function and use a StoredPlot parameter
+    ''' <summary>
+    ''' these makecontourFile functions should probably be merged into one function and use a StoredPlot parameter
+    ''' </summary>
+    ''' <param name="fileOrFunction"></param>
+    ''' <param name="outputFile"></param>
     Private Shared Sub makeContourFile(fileOrFunction As String, outputFile As String)
         'if it's a file, fileOrFunction needs quotes and escaped backslashes
         SaveSetState()
