@@ -1,4 +1,4 @@
-Imports System.Diagnostics
+﻿Imports System.Diagnostics
 Imports System.IO
 Imports System.Threading
 Imports Microsoft.VisualBasic
@@ -11,57 +11,58 @@ Imports Microsoft.VisualBasic.Language
 ''' non-interactive uses such as web scripting. It is also used as a plotting engine by third-party applications like Octave. 
 ''' Gnuplot has been supported and under active development since 1986.
 ''' </summary>
-Public Class GnuPlot
+Public Module GnuPlot
 
-    Public Shared PathToGnuplot As String = "C:\Program Files (x86)\gnuplot\bin"
-    Private Shared ExtPro As Process
-    Private Shared GnupStWr As StreamWriter
-    Private Shared PlotBuffer As List(Of StoredPlot)
-    Private Shared SPlotBuffer As List(Of StoredPlot)
-    Private Shared ReplotWithSplot As Boolean
+    Private PlotBuffer As New List(Of StoredPlot)
+    Private SPlotBuffer As New List(Of StoredPlot)
+    Private ReplotWithSplot As Boolean
 
-    Public Shared Property Hold As Boolean
+    Public Property Hold As Boolean = False
 
-    Shared Sub New()
-        If PathToGnuplot(PathToGnuplot.Length - 1).ToString() <> "\" Then
-            PathToGnuplot += "\"
+    Dim __interop As Interop
+
+    Sub New()
+        __interop = New Interop()
+        If __interop.Start Then
+
+        Else
+            Call $"GNUplot is not avaliable in the default location: {__interop.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
         End If
-        ExtPro = New Process()
-        ExtPro.StartInfo.FileName = PathToGnuplot & "gnuplot.exe"
-        ExtPro.StartInfo.UseShellExecute = False
-        ExtPro.StartInfo.RedirectStandardInput = True
-        ExtPro.Start()
-        GnupStWr = ExtPro.StandardInput
-        PlotBuffer = New List(Of StoredPlot)()
-        SPlotBuffer = New List(Of StoredPlot)()
-        Hold = False
     End Sub
 
-    Public Shared Sub WriteLine(gnuplotcommands As String)
+    ''' <summary>
+    ''' 假若从默认的位置启动程序没有成功的话，会需要使用这个函数从自定义位置启动程序
+    ''' </summary>
+    ''' <param name="gnuplot"></param>
+    Public Sub Start(gnuplot As String)
+
+    End Sub
+
+    Public Sub WriteLine(gnuplotcommands As String)
 
         GnupStWr.WriteLine(gnuplotcommands)
         GnupStWr.Flush()
     End Sub
 
-    Public Shared Sub Write(gnuplotcommands As String)
+    Public Sub Write(gnuplotcommands As String)
         GnupStWr.Write(gnuplotcommands)
         GnupStWr.Flush()
     End Sub
 
-    Public Shared Sub [Set](ParamArray options As String())
+    Public Sub [Set](ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
             GnupStWr.WriteLine("set " & options(i))
         Next
 
     End Sub
 
-    Public Shared Sub Unset(ParamArray options As String())
+    Public Sub Unset(ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
             GnupStWr.WriteLine("unset " & options(i))
         Next
     End Sub
 
-    Public Shared Function SaveData(Y As Double(), filename As String) As Boolean
+    Public Function SaveData(Y As Double(), filename As String) As Boolean
         Dim dataStream As New StreamWriter(filename, False)
         WriteData(Y, dataStream)
         dataStream.Close()
@@ -69,7 +70,7 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Function SaveData(X As Double(), Y As Double(), filename As String) As Boolean
+    Public Function SaveData(X As Double(), Y As Double(), filename As String) As Boolean
         Dim dataStream As New StreamWriter(filename, False)
         WriteData(X, Y, dataStream)
         dataStream.Close()
@@ -77,7 +78,7 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Function SaveData(X As Double(), Y As Double(), Z As Double(), filename As String) As Boolean
+    Public Function SaveData(X As Double(), Y As Double(), Z As Double(), filename As String) As Boolean
         Dim dataStream As New StreamWriter(filename, False)
         WriteData(X, Y, Z, dataStream)
         dataStream.Close()
@@ -85,7 +86,7 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Function SaveData(sizeY As Integer, Z As Double(), filename As String) As Boolean
+    Public Function SaveData(sizeY As Integer, Z As Double(), filename As String) As Boolean
         Dim dataStream As New StreamWriter(filename, False)
         WriteData(sizeY, Z, dataStream)
         dataStream.Close()
@@ -93,7 +94,7 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Function SaveData(Z As Double(,), filename As String) As Boolean
+    Public Function SaveData(Z As Double(,), filename As String) As Boolean
         Dim dataStream As New StreamWriter(filename, False)
         WriteData(Z, dataStream)
         dataStream.Close()
@@ -101,7 +102,7 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Sub Replot()
+    Public Sub Replot()
         If ReplotWithSplot Then
             SPlot(SPlotBuffer)
         Else
@@ -109,21 +110,21 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Public Shared Sub Plot(filenameOrFunction As String, Optional options As String = "")
+    Public Sub Plot(filenameOrFunction As String, Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
         PlotBuffer.Add(New StoredPlot(filenameOrFunction, options))
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub Plot(y As Double(), Optional options As String = "")
+    Public Sub Plot(y As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
         PlotBuffer.Add(New StoredPlot(y, options))
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub Plot(x As Double(), y As Double(), Optional options As String = "")
+    Public Sub Plot(x As Double(), y As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -131,7 +132,7 @@ Public Class GnuPlot
         Plot(PlotBuffer)
     End Sub
 
-    Public Shared Sub Contour(filenameOrFunction As String, Optional options As String = "", Optional labelContours As Boolean = True)
+    Public Sub Contour(filenameOrFunction As String, Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -140,7 +141,7 @@ Public Class GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub Contour(sizeY As Integer, z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
+    Public Sub Contour(sizeY As Integer, z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -149,7 +150,7 @@ Public Class GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub Contour(x As Double(), y As Double(), z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
+    Public Sub Contour(x As Double(), y As Double(), z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -158,7 +159,7 @@ Public Class GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub Contour(zz As Double(,), Optional options As String = "", Optional labelContours As Boolean = True)
+    Public Sub Contour(zz As Double(,), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -168,28 +169,28 @@ Public Class GnuPlot
         Plot(PlotBuffer)
     End Sub
 
-    Public Shared Sub HeatMap(filenameOrFunction As String, Optional options As String = "")
+    Public Sub HeatMap(filenameOrFunction As String, Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
         PlotBuffer.Add(New StoredPlot(filenameOrFunction, options, PlotTypes.ColorMapFileOrFunction))
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub HeatMap(sizeY As Integer, intensity As Double(), Optional options As String = "")
+    Public Sub HeatMap(sizeY As Integer, intensity As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
         PlotBuffer.Add(New StoredPlot(sizeY, intensity, options, PlotTypes.ColorMapZ))
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub HeatMap(x As Double(), y As Double(), intensity As Double(), Optional options As String = "")
+    Public Sub HeatMap(x As Double(), y As Double(), intensity As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
         PlotBuffer.Add(New StoredPlot(x, y, intensity, options, PlotTypes.ColorMapXYZ))
         Plot(PlotBuffer)
     End Sub
-    Public Shared Sub HeatMap(intensityGrid As Double(,), Optional options As String = "")
+    Public Sub HeatMap(intensityGrid As Double(,), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
         End If
@@ -197,14 +198,14 @@ Public Class GnuPlot
         Plot(PlotBuffer)
     End Sub
 
-    Public Shared Sub SPlot(filenameOrFunction As String, Optional options As String = "")
+    Public Sub SPlot(filenameOrFunction As String, Optional options As String = "")
         If Not Hold Then
             SPlotBuffer.Clear()
         End If
         SPlotBuffer.Add(New StoredPlot(filenameOrFunction, options, PlotTypes.SplotFileOrFunction))
         SPlot(SPlotBuffer)
     End Sub
-    Public Shared Sub SPlot(sizeY As Integer, z As Double(), Optional options As String = "")
+    Public Sub SPlot(sizeY As Integer, z As Double(), Optional options As String = "")
         If Not Hold Then
             SPlotBuffer.Clear()
         End If
@@ -212,7 +213,7 @@ Public Class GnuPlot
         SPlot(SPlotBuffer)
     End Sub
 
-    Public Shared Sub SPlot(x As Double(), y As Double(), z As Double(), Optional options As String = "")
+    Public Sub SPlot(x As Double(), y As Double(), z As Double(), Optional options As String = "")
         If Not Hold Then
             SPlotBuffer.Clear()
         End If
@@ -220,7 +221,7 @@ Public Class GnuPlot
         SPlot(SPlotBuffer)
     End Sub
 
-    Public Shared Sub SPlot(zz As Double(,), Optional options As String = "")
+    Public Sub SPlot(zz As Double(,), Optional options As String = "")
         If Not Hold Then
             SPlotBuffer.Clear()
         End If
@@ -229,7 +230,7 @@ Public Class GnuPlot
     End Sub
 
 
-    Public Shared Sub Plot(storedPlots As List(Of StoredPlot))
+    Public Sub Plot(storedPlots As List(Of StoredPlot))
         ReplotWithSplot = False
         Dim plot__1 As String = "plot "
         Dim plotstring As String = ""
@@ -334,7 +335,7 @@ Public Class GnuPlot
         GnupStWr.Flush()
     End Sub
 
-    Public Shared Sub SPlot(storedPlots As List(Of StoredPlot))
+    Public Sub SPlot(storedPlots As List(Of StoredPlot))
         ReplotWithSplot = True
         Dim splot__1 = "splot "
         Dim plotstring As String = ""
@@ -385,7 +386,7 @@ Public Class GnuPlot
         GnupStWr.Flush()
     End Sub
 
-    Public Shared Sub WriteData(y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
+    Public Sub WriteData(y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
             stream.WriteLine(y(i).ToString())
         Next
@@ -395,7 +396,7 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Public Shared Sub WriteData(x As Double(), y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
+    Public Sub WriteData(x As Double(), y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
             stream.WriteLine(x(i).ToString() & " " & y(i).ToString())
         Next
@@ -405,7 +406,7 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Public Shared Sub WriteData(ySize As Integer, z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
+    Public Sub WriteData(ySize As Integer, z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
         For i As Integer = 0 To z.Length - 1
             If i > 0 AndAlso i Mod ySize = 0 Then
                 stream.WriteLine()
@@ -418,7 +419,7 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Public Shared Sub WriteData(zz As Double(,), stream As StreamWriter, Optional flush As Boolean = True)
+    Public Sub WriteData(zz As Double(,), stream As StreamWriter, Optional flush As Boolean = True)
         Dim m As Integer = zz.GetLength(0)
         Dim n As Integer = zz.GetLength(1)
         Dim line As String
@@ -435,7 +436,7 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Public Shared Sub WriteData(x As Double(), y As Double(), z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
+    Public Sub WriteData(x As Double(), y As Double(), z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
         Dim m As Integer = Math.Min(x.Length, y.Length)
         m = Math.Min(m, z.Length)
         For i As Integer = 0 To m - 1
@@ -450,11 +451,11 @@ Public Class GnuPlot
         End If
     End Sub
 
-    Private Shared Function plotPath(path As String) As String
+    Private Function plotPath(path As String) As String
         Return """" & path.Replace("\", "\\") & """"
     End Function
 
-    Public Shared Sub SaveSetState(Optional filename As String = Nothing)
+    Public Sub SaveSetState(Optional filename As String = Nothing)
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
@@ -462,7 +463,7 @@ Public Class GnuPlot
         GnupStWr.Flush()
         waitForFile(filename)
     End Sub
-    Public Shared Sub LoadSetState(Optional filename As String = Nothing)
+    Public Sub LoadSetState(Optional filename As String = Nothing)
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
@@ -475,7 +476,7 @@ Public Class GnuPlot
     ''' </summary>
     ''' <param name="fileOrFunction"></param>
     ''' <param name="outputFile"></param>
-    Private Shared Sub makeContourFile(fileOrFunction As String, outputFile As String)
+    Private Sub makeContourFile(fileOrFunction As String, outputFile As String)
         'if it's a file, fileOrFunction needs quotes and escaped backslashes
         SaveSetState()
         [Set]("table " & plotPath(outputFile))
@@ -488,7 +489,7 @@ Public Class GnuPlot
         waitForFile(outputFile)
     End Sub
 
-    Private Shared Sub makeContourFile(x As Double(), y As Double(), z As Double(), outputFile As String)
+    Private Sub makeContourFile(x As Double(), y As Double(), z As Double(), outputFile As String)
         SaveSetState()
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
@@ -502,7 +503,7 @@ Public Class GnuPlot
         waitForFile(outputFile)
     End Sub
 
-    Private Shared Sub makeContourFile(zz As Double(,), outputFile As String)
+    Private Sub makeContourFile(zz As Double(,), outputFile As String)
         SaveSetState()
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
@@ -517,7 +518,7 @@ Public Class GnuPlot
         waitForFile(outputFile)
     End Sub
 
-    Private Shared Sub makeContourFile(sizeY As Integer, z As Double(), outputFile As String)
+    Private Sub makeContourFile(sizeY As Integer, z As Double(), outputFile As String)
         SaveSetState()
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
@@ -531,8 +532,8 @@ Public Class GnuPlot
         waitForFile(outputFile)
     End Sub
 
-    Shared contourLabelCount As Integer = 50000
-    Private Shared Sub setContourLabels(contourFile As String)
+     contourLabelCount As Integer = 50000
+    Private Sub setContourLabels(contourFile As String)
         Dim file As New System.IO.StreamReader(contourFile)
         Dim line As New Value(Of String)
         While (line = file.ReadLine()) IsNot Nothing
@@ -544,13 +545,13 @@ Public Class GnuPlot
         End While
         file.Close()
     End Sub
-    Private Shared Sub removeContourLabels()
+    Private Sub removeContourLabels()
         While contourLabelCount > 50000
             GnupStWr.WriteLine("unset object " & contourLabelCount & ";unset label " & Math.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
         End While
     End Sub
 
-    Private Shared Function waitForFile(filename As String, Optional timeout As Integer = 10000) As Boolean
+    Private Function waitForFile(filename As String, Optional timeout As Integer = 10000) As Boolean
         Thread.Sleep(20)
         Dim attempts As Integer = timeout \ 100
         Dim file As System.IO.StreamReader = Nothing
@@ -569,19 +570,22 @@ Public Class GnuPlot
         Return True
     End Function
 
-    Public Shared Sub HoldOn()
+    Public Sub HoldOn()
         Hold = True
         PlotBuffer.Clear()
         SPlotBuffer.Clear()
     End Sub
 
-    Public Shared Sub HoldOff()
+    Public Sub HoldOff()
         Hold = False
         PlotBuffer.Clear()
         SPlotBuffer.Clear()
     End Sub
 
-    Public Shared Sub Close()
+    ''' <summary>
+    ''' Close GNUplot main window
+    ''' </summary>
+    Public Sub Close()
         ExtPro.CloseMainWindow()
     End Sub
-End Class
+End Module
