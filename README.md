@@ -1,14 +1,13 @@
-GNUplot
-========
+# GNUplot
 
 ## Acknowledgement
 
-The initial project code in this repository was adapted from @AwokeKnowing work: https://github.com/AwokeKnowing/GnuplotCSharp
+> The initial project code in this repository was adapted from the original works of @AwokeKnowing: [**Gnuplot.C#**](https://github.com/AwokeKnowing/GnuplotCSharp)
+
+## Overview
 
 ![](./gaussians.png) ![](./front2.png)
 
-Overview
---------
 Most scientific publications with graphs use gnuplot.  It is extremely well documented and handles 2D, 3D (surface and pointcloud), heatmap, png, jpg, and much more using simple math syntax as well as simple text-based data.  And it supports many output formats, as well interactive zooming/rotating.
 
 Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. The source code is copyrighted but freely distributed (i.e., you don't have to pay for it). It was originally created to allow scientists and students to visualize mathematical functions and data interactively, but has grown to support many non-interactive uses such as web scripting. It is also used as a plotting engine by third-party applications like Octave. Gnuplot has been supported and under active development since 1986.
@@ -17,26 +16,37 @@ It only takes about 10 lines of code to wire up VB.NET to send commands to gnupl
 
 Gnuplot provides a nice set of functions to make it easy to use all the power of gnuplot to visualize your data in **.NET**.  Check out the examples of how easy it is to visualize functions and data.
 
-Installation
-----------
-Just put gnuplot.cs in your project, change the first line from C:\gnuplot\bin to the location of gnuplot.exe on your system.
+### Installation
+Just add project reference to the gnuplot project in your solution, and then Imports the namespace ``GNUplot``. If you have changed the default location of gnuplot, then you should using ``GNUplot.Start`` function to manual starting the gnuplot services.
+
+> Public Function **GNUplot.Start**(_gnuplot_ As String) As Boolean
+>
+> ###### Summary:
+> If you have change the default installed location of the gnuplot, then this function is required for manually starting the gnuplot services. (假若从默认的位置启动程序没有成功的话，会需要使用这个函数从自定义位置启动程序)
+>
+> ###### Parameters:
+> _gnuplot_: The file path of the program file: ``gnuplot.exe``
+>
+> ###### Returns:
+> The gnuplot services start successfully or not?
+
+```vbnet
+Public Function GNUplot.Start(String) As Boolean
+```
 
 If you haven't installed gnuplot on your system, download it at http://sourceforge.net/projects/gnuplot/files/ or http://www.gnuplot.info
 
-Inspiration
------------
+### Inspiration
 In 2012, I completed the excellent Machine Learning course by Andrew Ng (Coursera).  We used Octave/Matlab, and Octave uses gnuplot for its graphs. I wanted to recreate all the class projects in **.NET** for practice.  Microsoft has a cloud numerics library, so **.NET** is a good choice for machine learning if you want to for example, train your machine learning algorithm on a large dataset and scale across many computers in the Azure cloud.
 
 I believe this project will be helpful to anyone who wants to visualize data/functions in **.NET**, so I have released it here.
 
-Examples
-========
-To see various demos in action, download the files, open the solution (Visual Studio) and run Demo.cs (make sure you've installed gnuplot first)
+## Examples
+To see various demos in action, download the files, open the solution (Visual Studio) and run ``Test`` project (make sure you've installed gnuplot first)
 
-If you are not familiar with gnuplot, I recommend you visit www.gnuplot.info and see all the demos there.  Then come back for how to do it all in **.NET**.
+If you are not familiar with gnuplot, I recommend you visit http://www.gnuplot.info and see all the demos there.  Then come back for how to do it all in **.NET**.
 
-Plot
---------
+### Plot
 
 **Plot a function**
 ```vbnet
@@ -44,7 +54,6 @@ GnuPlot.Plot("sin(x) + 2")
 ```
 ![Plot a function](./images/plotf.png)
 -------
-<br><br>
 
 **Plot a function with custom color and line width** (see gnuplot documentation)
 ```vbnet
@@ -52,26 +61,23 @@ GnuPlot.Plot("sin(x) + 2", "lc rgb 'magenta' lw 5")
 ```
 ![Plot a function](./images/plotf2.png)
 -------
-<br><br>
 
 **Plot an array of y values**
 ```vbnet
-Dim Y#() = { -4, 6.5, -2, 3, -8, -5, 11, 4, -5, 10 }
-GnuPlot.Plot(Y)
+Dim Y#() = {-4, 6.5, -2, 3, -8, -5, 11, 4, -5, 10}
+GNUplot.Plot(Y)
 ```
 ![Plot data](./images/plotY.png)
 -------
-<br><br>
 
 **Plot an array of x and y values**  (notice the x values vs previous graph)
 ```vbnet
-Dim X#() = { -10, -8.5, -2, 1, 6, 9, 10, 14, 15, 19 }
-Dim Y#() = { -4, 6.5, -2, 3, -8, -5, 11, 4, -5, 10 }
-GnuPlot.Plot(X, Y)
+Dim X#() = {-10, -8.5, -2, 1, 6, 9, 10, 14, 15, 19}
+Dim Y#() = {-4, 6.5, -2, 3, -8, -5, 11, 4, -5, 10}
+GNUplot.Plot(X, Y)
 ```
 ![Plot data](./images/plotXY.png)
 -------
-<br><br>
 
 **Overlay multiple graphs**  (HoldOn causes future plots to be overlayed. HoldOff make future plots replace previous.
 ```vbnet
@@ -81,10 +87,8 @@ GnuPlot.Plot("cos(2*x)", "with points pt 3")
 ```
 ![Plot data](./images/plotOverlay.png)
 -------
-<br><br>
 
-Splot  (3D data)
---------
+### Splot (3D data)
 
 **plot a 3D function**
 ```vbnet
@@ -92,7 +96,7 @@ GnuPlot.SPlot("1 / (.05*x*x + .05*y*y + 1)")
 ```
 ![Plot data](./images/splot1.png)
 -------
-<br>
+
 Set the number of lines with **isosamples** to control "detail" (see gnuplot documentation)
 ```vbnet
 GnuPlot.Set("isosamples 30")
@@ -100,7 +104,7 @@ GnuPlot.SPlot("1 / (.05*x*x + .05*y*y + 1)")
 ```
 ![Plot data](./images/splot2.png)
 -------
-<br>
+
 Hide back faces with **hidden3d** to make it "solid" (see gnuplot documentation)
 ```vbnet
 GnuPlot.Set("isosamples 30", "hidden3d")
@@ -108,23 +112,21 @@ GnuPlot.SPlot("1 / (.05*x*x + .05*y*y + 1)")
 ```
 ![Plot data](./images/splot3.png)
 -------
-<br><br>
 
 **plot a file with 3D data**
 __data.txt__  (this can be in any format accepted by gnuplot.  Here it's x,y,z points for two separate polygons)
 ```
--1 -1 -1
--1 1 -1
--.1 .1 1
--.1 -.1 1
--1 -1 -1
+ -1  -1 -1
+ -1   1 -1
+-.1  .1  1
+-.1 -.1  1
+ -1  -1 -1
 
-
-.1 .1 1
-.1 -.1 1
-1 -1 -1
-1 1 -1
-.1 .1 1
+ .1  .1  1
+ .1 -.1  1
+  1  -1 -1
+  1   1 -1
+ .1  .1  1
 ```
 
 **to plot the above file**
@@ -133,7 +135,6 @@ splot ("data.txt")
 ```
 ![Plot data](./images/splotfile.png)
 -------
-<br><br>
 
 **plot an array of z values** (specify y size to break the array into a square grid)
 ```vbnet
@@ -143,66 +144,60 @@ GnuPlot.SPlot(4, Z) ' split the 12 z values into rows of 4 points
 ```
 ![Plot data](./images/splotSZ.png)
 -------
-<br><br>
 
 **plot a grid of z values** and use some styling (see gnuplot docs for style commands)
 ```vbnet
-Dim Z#(,) = { {-4,-2.5,1,3},  {-3,-2,3,4},   {-1,2,6,8 } }
-GnuPlot.Set("pm3d","palette gray")         ' we'll make monochrome color based on height of the plane
-GnuPlot.SPlot(Z,"with points pointtype 6") ' we'll try with points at vertexes instead of lines
+Dim Z#(,) = {{-4, -2.5, 1, 3}, {-3, -2, 3, 4}, {-1, 2, 6, 8}}
+GNUplot.Set("pm3d", "palette gray")         ' we'll make monochrome color based on height of the plane
+GNUplot.SPlot(Z, "with points pointtype 6") ' we'll try with points at vertexes instead of lines
 ```
 ![Plot data](./images/splotZZ.png)
 -------
-<br><br>
 
 **plot a point cloud of x, y, and z values**
 ```vbnet
-		' make some random data points
-		Dim X#() = New Double(100) {}
-        Dim Y#() = New double(100) {}
-        Dim Z#() = New double(100) {}
-        Dim r As New Random()
+' make some random data points
+Dim X#() = New Double(100) {}
+Dim Y#() = New Double(100) {}
+Dim Z#() = New Double(100) {}
+Dim r As New Random()
 
-        For i% = 0 To 100
+For i% = 0 To 100
+    X(i) = r.Next(30) - 15
+    Y(i) = r.Next(50) - 25
+    Z(i) = r.Next(20) - 10
+Next
 
-            X(i) = r.Next(30) - 15
-            Y(i) = r.Next(50) - 25
-            Z(i) = r.Next(20) - 10
-        Next
-
-        ' set the range for the x,y,z axis and plot (using pointtype triangle and color blue)
-		GnuPlot.Set("xrange[-30:30]", "yrange[-30:30]", "zrange[-30:30]")
-        GnuPlot.SPlot(X, Y, Z, "with points pointtype 8 lc rgb 'blue'")
+' set the range for the x,y,z axis and plot (using pointtype triangle and color blue)
+GNUplot.Set("xrange[-30:30]", "yrange[-30:30]", "zrange[-30:30]")
+GNUplot.SPlot(X, Y, Z, "with points pointtype 8 lc rgb 'blue'")
 ```
 ![Plot data](./images/splotxyz1.png)
 -------
-<br><br>
 
 **plot a surface based on random unordered x, y, and z values**
 ```vbnet
-		' make 20 random data points
-		Dim X#() = New double(20) {}
-        Dim Y#() = New double(20) {}
-        Dim Z#() = New double(20) {}
-        Dim r As New Random()
+' make 20 random data points
+Dim X#() = New Double(20) {}
+Dim Y#() = New Double(20) {}
+Dim Z#() = New Double(20) {}
+Dim r As New Random()
 
-        For i% = 0 To 20
-            X(i) = r.Next(30) - 15
-            Y(i) = r.Next(50) - 25
-            Z(i) = r.Next(20) - 10
-        Next
+For i% = 0 To 20
+    X(i) = r.Next(30) - 15
+    Y(i) = r.Next(50) - 25
+    Z(i) = r.Next(20) - 10
+Next
 
-        ' fit the points to a surface grid of 40x40 with smoothing level 2
-		GnuPlot.Set("dgrid3d 40,40,2")
+' fit the points to a surface grid of 40x40 with smoothing level 2
+GNUplot.Set("dgrid3d 40,40,2")
 
-		' set the range for the x,y,z axis and plot (using pm3d to map height to color)
-        GnuPlot.Set("xrange[-30:30]", "yrange[-30:30]", "zrange[-30:30]")
-        GnuPlot.SPlot(X, Y, Z,"with pm3d")
+' set the range for the x,y,z axis and plot (using pm3d to map height to color)
+GNUplot.Set("xrange[-30:30]", "yrange[-30:30]", "zrange[-30:30]")
+GNUplot.SPlot(X, Y, Z, "with pm3d")
 ```
 ![Plot data](./images/splotxyz2.png)
 -------
-<br><br>
-
 
 Contour (3D data as "top view" with contour lines)
 --------
@@ -215,30 +210,27 @@ GnuPlot.Contour("sin(x) * cos(y)+x","lc rgb 'blue'")                      ' plot
 ```
 ![Plot data](./images/contourfunc.png)
 -------
-<br><br>
-
-
 
 Heatmap  (intensity/z-scale map)
 --------
 
 ```vbnet
-Dim Z#(,) = New Double(,) {{0,0,0,1,2,2,1,0,0,0},
-                            {0,0,2,3,3,3,3,2,0,0},
-                            {0,2,3,4,4,4,4,3,2,0},
-                            {2,3,4,5,5,5,5,4,3,2},
-                            {3,4,5,6,7,7,6,5,4,3},
-                            {3,4,5,6,7,7,6,5,4,3},
-                            {2,3,4,5,5,5,5,4,3,2},
-                            {0,2,3,4,4,4,4,3,2,0},
-                            {0,0,2,3,3,3,3,2,0,0},
-                            {0,0,0,1,2,2,1,0,0,0}}
-GnuPlot.HeatMap(Z)
+Dim Z#(,) = New Double(,) {
+    {0, 0, 0, 1, 2, 2, 1, 0, 0, 0},
+    {0, 0, 2, 3, 3, 3, 3, 2, 0, 0},
+    {0, 2, 3, 4, 4, 4, 4, 3, 2, 0},
+    {2, 3, 4, 5, 5, 5, 5, 4, 3, 2},
+    {3, 4, 5, 6, 7, 7, 6, 5, 4, 3},
+    {3, 4, 5, 6, 7, 7, 6, 5, 4, 3},
+    {2, 3, 4, 5, 5, 5, 5, 4, 3, 2},
+    {0, 2, 3, 4, 4, 4, 4, 3, 2, 0},
+    {0, 0, 2, 3, 3, 3, 3, 2, 0, 0},
+    {0, 0, 0, 1, 2, 2, 1, 0, 0, 0}
+}
+Call GNUplot.HeatMap(Z)
 ```
 ![Plot data](./images/heatmap.png)
 -------
-<br><br>
-
 
 Set and Unset
 --------

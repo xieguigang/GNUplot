@@ -42,11 +42,16 @@ Public Module GNUplot
     End Sub
 
     ''' <summary>
-    ''' 假若从默认的位置启动程序没有成功的话，会需要使用这个函数从自定义位置启动程序
+    ''' If you have change the default installed location of the gnuplot, then this 
+    ''' function is required for manually starting the gnuplot services.
+    ''' (假若从默认的位置启动程序没有成功的话，会需要使用这个函数从自定义位置启动程序)
     ''' </summary>
-    ''' <param name="gnuplot"></param>
-    Public Function Start(gnuplot As String) As Boolean
-        __gnuplot = New Interop(gnuplot)
+    ''' <param name="gnuplot">
+    ''' The file path of the program file: ``gnuplot.exe``
+    ''' </param>
+    ''' <returns>The gnuplot services start successfully or not?</returns>
+    Public Function Start(gnuplot$) As Boolean
+        __gnuplot = New Interop(gnuplot$)
         Return __gnuplot.Start
     End Function
 
