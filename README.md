@@ -5,9 +5,13 @@ GNUplot
 
 The initial project code in this repository was adapted from @AwokeKnowing work: https://github.com/AwokeKnowing/GnuplotCSharp
 
+![](./gaussians.png) ![](./front2.png)
+
 Overview
 --------
 Most scientific publications with graphs use gnuplot.  It is extremely well documented and handles 2D, 3D (surface and pointcloud), heatmap, png, jpg, and much more using simple math syntax as well as simple text-based data.  And it supports many output formats, as well interactive zooming/rotating.
+
+Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. The source code is copyrighted but freely distributed (i.e., you don't have to pay for it). It was originally created to allow scientists and students to visualize mathematical functions and data interactively, but has grown to support many non-interactive uses such as web scripting. It is also used as a plotting engine by third-party applications like Octave. Gnuplot has been supported and under active development since 1986.
 
 It only takes about 10 lines of code to wire up VB.NET to send commands to gnuplot. But as soon as you try to send arrays of data, overlay multiple graphs, and generally work with gnuplot from VB.NET, you'll immediately see that you have to add all kinds of utility functions to not clutter up your code.
 
