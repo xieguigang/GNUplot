@@ -11,7 +11,7 @@ Imports Microsoft.VisualBasic.Language
 ''' non-interactive uses such as web scripting. It is also used as a plotting engine by third-party applications like Octave. 
 ''' Gnuplot has been supported and under active development since 1986.
 ''' </summary>
-Public Module GnuPlot
+Public Module GNUplot
 
     Private PlotBuffer As New List(Of StoredPlot)
     Private SPlotBuffer As New List(Of StoredPlot)
@@ -19,14 +19,17 @@ Public Module GnuPlot
 
     Public Property Hold As Boolean = False
 
-    Dim __interop As Interop
+    ''' <summary>
+    ''' gnuplot interop services instance.
+    ''' </summary>
+    Dim __gnuplot As Interop
 
     Sub New()
-        __interop = New Interop()
-        If __interop.Start Then
+        __gnuplot = New Interop()
+        If __gnuplot.Start Then
 
         Else
-            Call $"GNUplot is not avaliable in the default location: {__interop.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
+            Call $"GNUplot is not avaliable in the default location: {__gnuplot.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
         End If
     End Sub
 
@@ -34,31 +37,30 @@ Public Module GnuPlot
     ''' 假若从默认的位置启动程序没有成功的话，会需要使用这个函数从自定义位置启动程序
     ''' </summary>
     ''' <param name="gnuplot"></param>
-    Public Sub Start(gnuplot As String)
-
-    End Sub
+    Public Function Start(gnuplot As String) As Boolean
+        __gnuplot = New Interop(gnuplot)
+        Return __gnuplot.Start
+    End Function
 
     Public Sub WriteLine(gnuplotcommands As String)
-
-        GnupStWr.WriteLine(gnuplotcommands)
-        GnupStWr.Flush()
+        __gnuplot.WriteLine(gnuplotcommands)
+        __gnuplot.Flush()
     End Sub
 
     Public Sub Write(gnuplotcommands As String)
-        GnupStWr.Write(gnuplotcommands)
-        GnupStWr.Flush()
+        __gnuplot.Write(gnuplotcommands)
+        __gnuplot.Flush()
     End Sub
 
     Public Sub [Set](ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
-            GnupStWr.WriteLine("set " & options(i))
+            __gnuplot.WriteLine("set " & options(i))
         Next
-
     End Sub
 
     Public Sub Unset(ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
-            GnupStWr.WriteLine("unset " & options(i))
+            __gnuplot.WriteLine("unset " & options(i))
         Next
     End Sub
 
@@ -117,6 +119,7 @@ Public Module GnuPlot
         PlotBuffer.Add(New StoredPlot(filenameOrFunction, options))
         Plot(PlotBuffer)
     End Sub
+
     Public Sub Plot(y As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
@@ -124,6 +127,7 @@ Public Module GnuPlot
         PlotBuffer.Add(New StoredPlot(y, options))
         Plot(PlotBuffer)
     End Sub
+
     Public Sub Plot(x As Double(), y As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
@@ -141,6 +145,7 @@ Public Module GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
+
     Public Sub Contour(sizeY As Integer, z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
@@ -150,6 +155,7 @@ Public Module GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
+
     Public Sub Contour(x As Double(), y As Double(), z As Double(), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
@@ -159,6 +165,7 @@ Public Module GnuPlot
         PlotBuffer.Add(p)
         Plot(PlotBuffer)
     End Sub
+
     Public Sub Contour(zz As Double(,), Optional options As String = "", Optional labelContours As Boolean = True)
         If Not Hold Then
             PlotBuffer.Clear()
@@ -176,6 +183,7 @@ Public Module GnuPlot
         PlotBuffer.Add(New StoredPlot(filenameOrFunction, options, PlotTypes.ColorMapFileOrFunction))
         Plot(PlotBuffer)
     End Sub
+
     Public Sub HeatMap(sizeY As Integer, intensity As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
@@ -183,6 +191,7 @@ Public Module GnuPlot
         PlotBuffer.Add(New StoredPlot(sizeY, intensity, options, PlotTypes.ColorMapZ))
         Plot(PlotBuffer)
     End Sub
+
     Public Sub HeatMap(x As Double(), y As Double(), intensity As Double(), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
@@ -190,6 +199,7 @@ Public Module GnuPlot
         PlotBuffer.Add(New StoredPlot(x, y, intensity, options, PlotTypes.ColorMapXYZ))
         Plot(PlotBuffer)
     End Sub
+
     Public Sub HeatMap(intensityGrid As Double(,), Optional options As String = "")
         If Not Hold Then
             PlotBuffer.Clear()
@@ -205,6 +215,7 @@ Public Module GnuPlot
         SPlotBuffer.Add(New StoredPlot(filenameOrFunction, options, PlotTypes.SplotFileOrFunction))
         SPlot(SPlotBuffer)
     End Sub
+
     Public Sub SPlot(sizeY As Integer, z As Double(), Optional options As String = "")
         If Not Hold Then
             SPlotBuffer.Clear()
@@ -228,7 +239,6 @@ Public Module GnuPlot
         SPlotBuffer.Add(New StoredPlot(zz, options))
         SPlot(SPlotBuffer)
     End Sub
-
 
     Public Sub Plot(storedPlots As List(Of StoredPlot))
         ReplotWithSplot = False
@@ -303,36 +313,35 @@ Public Module GnuPlot
                 plot__1 = ", "
             End If
         Next
-        GnupStWr.WriteLine(plotstring)
+        __gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
+
             Select Case p.PlotType
                 Case PlotTypes.PlotXY
-                    WriteData(p.X, p.Y, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.X, p.Y, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.PlotY
-                    WriteData(p.Y, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.Y, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapXYZ
-                    WriteData(p.X, p.Y, p.Z, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.X, p.Y, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZ
-                    WriteData(p.YSize, p.Z, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.YSize, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZZ
-                    WriteData(p.ZZ, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
-                    GnupStWr.WriteLine("e")
-
-
+                    WriteData(p.ZZ, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
+                    __gnuplot.WriteLine("e")
             End Select
         Next
-        GnupStWr.Flush()
+        __gnuplot.Flush()
     End Sub
 
     Public Sub SPlot(storedPlots As List(Of StoredPlot))
@@ -363,92 +372,27 @@ Public Module GnuPlot
                 splot__1 = ", "
             End If
         Next
-        GnupStWr.WriteLine(plotstring)
+        __gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             Select Case p.PlotType
                 Case PlotTypes.SplotXYZ
-                    WriteData(p.X, p.Y, p.Z, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.X, p.Y, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZZ
-                    WriteData(p.ZZ, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.ZZ, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
+                    __gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZ
-                    WriteData(p.YSize, p.Z, GnupStWr, False)
-                    GnupStWr.WriteLine("e")
+                    WriteData(p.YSize, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.WriteLine("e")
 
             End Select
         Next
-        GnupStWr.Flush()
-    End Sub
-
-    Public Sub WriteData(y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
-        For i As Integer = 0 To y.Length - 1
-            stream.WriteLine(y(i).ToString())
-        Next
-
-        If flush Then
-            stream.Flush()
-        End If
-    End Sub
-
-    Public Sub WriteData(x As Double(), y As Double(), stream As StreamWriter, Optional flush As Boolean = True)
-        For i As Integer = 0 To y.Length - 1
-            stream.WriteLine(x(i).ToString() & " " & y(i).ToString())
-        Next
-
-        If flush Then
-            stream.Flush()
-        End If
-    End Sub
-
-    Public Sub WriteData(ySize As Integer, z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
-        For i As Integer = 0 To z.Length - 1
-            If i > 0 AndAlso i Mod ySize = 0 Then
-                stream.WriteLine()
-            End If
-            stream.WriteLine(z(i).ToString())
-        Next
-
-        If flush Then
-            stream.Flush()
-        End If
-    End Sub
-
-    Public Sub WriteData(zz As Double(,), stream As StreamWriter, Optional flush As Boolean = True)
-        Dim m As Integer = zz.GetLength(0)
-        Dim n As Integer = zz.GetLength(1)
-        Dim line As String
-        For i As Integer = 0 To m - 1
-            line = ""
-            For j As Integer = 0 To n - 1
-                line += zz(i, j).ToString() & " "
-            Next
-            stream.WriteLine(line.TrimEnd())
-        Next
-
-        If flush Then
-            stream.Flush()
-        End If
-    End Sub
-
-    Public Sub WriteData(x As Double(), y As Double(), z As Double(), stream As StreamWriter, Optional flush As Boolean = True)
-        Dim m As Integer = Math.Min(x.Length, y.Length)
-        m = Math.Min(m, z.Length)
-        For i As Integer = 0 To m - 1
-            If i > 0 AndAlso x(i) <> x(i - 1) Then
-                stream.WriteLine("")
-            End If
-            stream.WriteLine(x(i) & " " & y(i) & " " & z(i))
-        Next
-
-        If flush Then
-            stream.Flush()
-        End If
+        __gnuplot.Flush()
     End Sub
 
     Private Function plotPath(path As String) As String
@@ -459,16 +403,17 @@ Public Module GnuPlot
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        GnupStWr.WriteLine("save set " & plotPath(filename))
-        GnupStWr.Flush()
+        __gnuplot.WriteLine("save set " & plotPath(filename))
+        __gnuplot.Flush()
         waitForFile(filename)
     End Sub
+
     Public Sub LoadSetState(Optional filename As String = Nothing)
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        GnupStWr.WriteLine("load " & plotPath(filename))
-        GnupStWr.Flush()
+        __gnuplot.WriteLine("load " & plotPath(filename))
+        __gnuplot.Flush()
     End Sub
 
     ''' <summary>
@@ -482,9 +427,9 @@ Public Module GnuPlot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        GnupStWr.WriteLine("splot " & fileOrFunction)
+        __gnuplot.WriteLine("splot " & fileOrFunction)
         Unset("table")
-        GnupStWr.Flush()
+        __gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -494,11 +439,11 @@ Public Module GnuPlot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        GnupStWr.WriteLine("splot ""-""")
-        WriteData(x, y, z, GnupStWr)
-        GnupStWr.WriteLine("e")
+        __gnuplot.WriteLine("splot ""-""")
+        WriteData(x, y, z, __gnuplot.std_in)
+        __gnuplot.WriteLine("e")
         Unset("table")
-        GnupStWr.Flush()
+        __gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -508,12 +453,12 @@ Public Module GnuPlot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        GnupStWr.WriteLine("splot ""-"" matrix")
-        WriteData(zz, GnupStWr)
-        GnupStWr.WriteLine("e")
-        GnupStWr.WriteLine("e")
+        __gnuplot.WriteLine("splot ""-"" matrix")
+        WriteData(zz, __gnuplot.std_in)
+        __gnuplot.WriteLine("e")
+        __gnuplot.WriteLine("e")
         Unset("table")
-        GnupStWr.Flush()
+        __gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -523,52 +468,35 @@ Public Module GnuPlot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        GnupStWr.WriteLine("splot ""-""")
-        WriteData(sizeY, z, GnupStWr)
-        GnupStWr.WriteLine("e")
+        __gnuplot.WriteLine("splot ""-""")
+        WriteData(sizeY, z, __gnuplot.std_in)
+        __gnuplot.WriteLine("e")
         Unset("table")
-        GnupStWr.Flush()
+        __gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
 
-     contourLabelCount As Integer = 50000
+    Dim contourLabelCount As Integer = 50000
+
     Private Sub setContourLabels(contourFile As String)
         Dim file As New System.IO.StreamReader(contourFile)
         Dim line As New Value(Of String)
         While (line = file.ReadLine()) IsNot Nothing
             If line.value.Contains("label:") Then
                 Dim c As String() = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(" "c)
-                GnupStWr.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
-                GnupStWr.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
+                __gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
+                __gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
             End If
         End While
         file.Close()
     End Sub
+
     Private Sub removeContourLabels()
         While contourLabelCount > 50000
-            GnupStWr.WriteLine("unset object " & contourLabelCount & ";unset label " & Math.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
+            __gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & Math.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
         End While
     End Sub
-
-    Private Function waitForFile(filename As String, Optional timeout As Integer = 10000) As Boolean
-        Thread.Sleep(20)
-        Dim attempts As Integer = timeout \ 100
-        Dim file As System.IO.StreamReader = Nothing
-        While file Is Nothing
-            Try
-                file = New System.IO.StreamReader(filename)
-            Catch
-                If System.Math.Max(System.Threading.Interlocked.Decrement(attempts), attempts + 1) > 0 Then
-                    Thread.Sleep(100)
-                Else
-                    Return False
-                End If
-            End Try
-        End While
-        file.Close()
-        Return True
-    End Function
 
     Public Sub HoldOn()
         Hold = True
@@ -586,6 +514,6 @@ Public Module GnuPlot
     ''' Close GNUplot main window
     ''' </summary>
     Public Sub Close()
-        ExtPro.CloseMainWindow()
+        __gnuplot.GNUplot.CloseMainWindow()
     End Sub
 End Module

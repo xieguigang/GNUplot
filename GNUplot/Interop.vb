@@ -31,9 +31,17 @@ Public Class Interop : Implements IDisposable
         PathToGnuplot = gnuplot
     End Sub
 
+    ''' <summary>
+    ''' Execute the input commandline immediately.
+    ''' </summary>
+    ''' <param name="cmd$"></param>
     Public Sub Invoke(cmd$)
         Call std_in.WriteLine(cmd)
         Call std_in.Flush()
+    End Sub
+
+    Public Sub Write(cmd$)
+        Call std_in.Write(cmd)
     End Sub
 
     Public Sub WriteLine(cmd$)
