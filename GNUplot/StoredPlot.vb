@@ -1,4 +1,6 @@
 ﻿
+Imports Microsoft.VisualBasic.Serialization.JSON
+
 Public Class StoredPlot
 
     Public File As String = Nothing
@@ -14,6 +16,7 @@ Public Class StoredPlot
 
     Public Sub New()
     End Sub
+
     Public Sub New(functionOrfilename As String, Optional options__1 As String = "", Optional plotType__2 As PlotTypes = PlotTypes.PlotFileOrFunction)
         If IsFile(functionOrfilename) Then
             File = functionOrfilename
@@ -77,5 +80,9 @@ Public Class StoredPlot
             Return True
         End If
         Return False
+    End Function
+
+    Public Overrides Function ToString() As String
+        Return Me.GetJson
     End Function
 End Class

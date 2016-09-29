@@ -1,12 +1,11 @@
-﻿
-Imports System.IO
+﻿Imports System.IO
 Imports System.Runtime.CompilerServices
 Imports System.Threading
 
 ''' <summary>
-''' Data services
+''' GNUplot data services
 ''' </summary>
-Module Data
+Public Module Data
 
     Public Function waitForFile(filename$, Optional timeout% = 10000) As Boolean
         Dim attempts As Integer = timeout \ 100

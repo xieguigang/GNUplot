@@ -24,6 +24,14 @@ Public Module GNUplot
     ''' </summary>
     Dim __gnuplot As Interop
 
+    Public WriteOnly Property call$
+        Set(value As String)
+            SyncLock __gnuplot
+                Call __gnuplot.Invoke(value)
+            End SyncLock
+        End Set
+    End Property
+
     Sub New()
         __gnuplot = New Interop()
         If __gnuplot.Start Then
@@ -65,41 +73,41 @@ Public Module GNUplot
     End Sub
 
     Public Function SaveData(Y As Double(), filename As String) As Boolean
-        Dim dataStream As New StreamWriter(filename, False)
-        WriteData(Y, dataStream)
-        dataStream.Close()
+        Using dataStream As New StreamWriter(filename, False)
+            dataStream.WriteData(Y)
+        End Using
 
         Return True
     End Function
 
     Public Function SaveData(X As Double(), Y As Double(), filename As String) As Boolean
-        Dim dataStream As New StreamWriter(filename, False)
-        WriteData(X, Y, dataStream)
-        dataStream.Close()
+        Using dataStream As New StreamWriter(filename, False)
+            dataStream.WriteData(X, Y)
+        End Using
 
         Return True
     End Function
 
     Public Function SaveData(X As Double(), Y As Double(), Z As Double(), filename As String) As Boolean
-        Dim dataStream As New StreamWriter(filename, False)
-        WriteData(X, Y, Z, dataStream)
-        dataStream.Close()
+        Using dataStream As New StreamWriter(filename, False)
+            dataStream.WriteData(X, Y, Z)
+        End Using
 
         Return True
     End Function
 
     Public Function SaveData(sizeY As Integer, Z As Double(), filename As String) As Boolean
-        Dim dataStream As New StreamWriter(filename, False)
-        WriteData(sizeY, Z, dataStream)
-        dataStream.Close()
+        Using dataStream As New StreamWriter(filename, False)
+            dataStream.WriteData(sizeY, Z)
+        End Using
 
         Return True
     End Function
 
     Public Function SaveData(Z As Double(,), filename As String) As Boolean
-        Dim dataStream As New StreamWriter(filename, False)
-        WriteData(Z, dataStream)
-        dataStream.Close()
+        Using dataStream As New StreamWriter(filename, False)
+            dataStream.WriteData(Z)
+        End Using
 
         Return True
     End Function
@@ -246,10 +254,13 @@ Public Module GNUplot
         Dim plotstring As String = ""
         Dim contfile As String
         Dim defcntopts As String
+
         removeContourLabels()
+
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             defcntopts = If((p.Options.Length > 0 AndAlso (p.Options.Contains(" w") OrElse p.Options(0) = "w"c)), " ", " with lines ")
+
             Select Case p.PlotType
                 Case PlotTypes.PlotFileOrFunction
                     If p.File IsNot Nothing Then
@@ -293,8 +304,6 @@ Public Module GNUplot
                     End If
                     plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
 
-
-
                 Case PlotTypes.ColorMapFileOrFunction
                     If p.File IsNot Nothing Then
                         plotstring += (plot__1 & plotPath(p.File) & " with image " & p.Options)
@@ -313,34 +322,36 @@ Public Module GNUplot
                 plot__1 = ", "
             End If
         Next
-        __gnuplot.WriteLine(plotstring)
+
+        Call __gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
 
             Select Case p.PlotType
                 Case PlotTypes.PlotXY
-                    WriteData(p.X, p.Y, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.X, p.Y, False)
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.PlotY
-                    WriteData(p.Y, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.Y, False)
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapXYZ
-                    WriteData(p.X, p.Y, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZ
-                    WriteData(p.YSize, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.YSize, p.Z, False)
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZZ
-                    WriteData(p.ZZ, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.ZZ, False)
                     __gnuplot.WriteLine("e")
                     __gnuplot.WriteLine("e")
             End Select
         Next
+
         __gnuplot.Flush()
     End Sub
 
@@ -349,7 +360,9 @@ Public Module GNUplot
         Dim splot__1 = "splot "
         Dim plotstring As String = ""
         Dim defopts As String = ""
+
         removeContourLabels()
+
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             defopts = If((p.Options.Length > 0 AndAlso (p.Options.Contains(" w") OrElse p.Options(0) = "w"c)), " ", " with lines ")
@@ -372,26 +385,28 @@ Public Module GNUplot
                 splot__1 = ", "
             End If
         Next
+
         __gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             Select Case p.PlotType
                 Case PlotTypes.SplotXYZ
-                    WriteData(p.X, p.Y, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZZ
-                    WriteData(p.ZZ, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.ZZ, False)
                     __gnuplot.WriteLine("e")
                     __gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZ
-                    WriteData(p.YSize, p.Z, __gnuplot.std_in, False)
+                    __gnuplot.std_in.WriteData(p.YSize, p.Z, False)
                     __gnuplot.WriteLine("e")
 
             End Select
         Next
+
         __gnuplot.Flush()
     End Sub
 
@@ -440,7 +455,7 @@ Public Module GNUplot
         [Set]("contour base")
         Unset("surface")
         __gnuplot.WriteLine("splot ""-""")
-        WriteData(x, y, z, __gnuplot.std_in)
+        __gnuplot.std_in.WriteData(x, y, z)
         __gnuplot.WriteLine("e")
         Unset("table")
         __gnuplot.Flush()
@@ -454,7 +469,7 @@ Public Module GNUplot
         [Set]("contour base")
         Unset("surface")
         __gnuplot.WriteLine("splot ""-"" matrix")
-        WriteData(zz, __gnuplot.std_in)
+        __gnuplot.std_in.WriteData(zz)
         __gnuplot.WriteLine("e")
         __gnuplot.WriteLine("e")
         Unset("table")
@@ -469,7 +484,7 @@ Public Module GNUplot
         [Set]("contour base")
         Unset("surface")
         __gnuplot.WriteLine("splot ""-""")
-        WriteData(sizeY, z, __gnuplot.std_in)
+        __gnuplot.std_in.WriteData(sizeY, z)
         __gnuplot.WriteLine("e")
         Unset("table")
         __gnuplot.Flush()
@@ -480,16 +495,17 @@ Public Module GNUplot
     Dim contourLabelCount As Integer = 50000
 
     Private Sub setContourLabels(contourFile As String)
-        Dim file As New System.IO.StreamReader(contourFile)
-        Dim line As New Value(Of String)
-        While (line = file.ReadLine()) IsNot Nothing
-            If line.value.Contains("label:") Then
-                Dim c As String() = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(" "c)
-                __gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
-                __gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
-            End If
-        End While
-        file.Close()
+        Using file As New StreamReader(contourFile)
+            Dim line As New Value(Of String)
+
+            While (line = file.ReadLine()) IsNot Nothing
+                If line.value.Contains("label:") Then
+                    Dim c As String() = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(" "c)
+                    __gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
+                    __gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
+                End If
+            End While
+        End Using
     End Sub
 
     Private Sub removeContourLabels()
