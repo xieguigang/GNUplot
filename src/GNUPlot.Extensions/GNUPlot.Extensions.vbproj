@@ -7,4 +7,8 @@
     <AssemblyName>GNUplot.Extensions</AssemblyName>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj" />
+    <ProjectReference Include="..\GNUplot\GNUplot.vbproj" />
+  </ItemGroup>
 </Project>
