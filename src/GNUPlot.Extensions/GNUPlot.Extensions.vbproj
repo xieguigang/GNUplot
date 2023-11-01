@@ -1,2 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <UseApplicationFramework>True</UseApplicationFramework>
+    <TargetFrameworks>net6.0-windows;net6.0;net48</TargetFrameworks>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <RootNamespace>GNUplot</RootNamespace>
+    <AssemblyName>GNUplot.Extensions</AssemblyName>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
 </Project>
