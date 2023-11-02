@@ -9,6 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj" />
-    <ProjectReference Include="..\GNUplot\GNUplot.vbproj" />
+    <ProjectReference Include="..\GNUplot.Interop\GNUplot.Interop.vbproj" />
   </ItemGroup>
 </Project>

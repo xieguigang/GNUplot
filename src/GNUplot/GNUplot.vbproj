@@ -5,4 +5,11 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\R-sharp\R#\Rsharp-netcore5.vbproj" />
+    <ProjectReference Include="..\..\..\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj" />
+    <ProjectReference Include="..\GNUPlot.Extensions\GNUPlot.Extensions.vbproj" />
+    <ProjectReference Include="..\GNUplot.Interop\GNUplot.Interop.vbproj" />
+  </ItemGroup>
+
 </Project>

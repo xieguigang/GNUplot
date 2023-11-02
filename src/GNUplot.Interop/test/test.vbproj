@@ -116,9 +116,9 @@
       <Project>{dcc7eb3c-4a3e-4ad6-a4f7-39e8c6ef130f}</Project>
       <Name>GNUPlot.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GNUplot.vbproj">
-      <Project>{99d9b8fd-620f-4bf7-b2ea-0416754d8178}</Project>
-      <Name>GNUplot</Name>
+    <ProjectReference Include="..\GNUplot.Interop.vbproj">
+      <Project>{8AEEE3BB-284A-4808-9CBD-98A7FB728781}</Project>
+      <Name>GNUplot.Interop</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
