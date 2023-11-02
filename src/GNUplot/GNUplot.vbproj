@@ -4,6 +4,7 @@
     <RootNamespace>GNUplot</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
     <OutputPath>../../assembly</OutputPath>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -13,6 +13,7 @@
     <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
     <AssemblyName>GNUplot.Interop</AssemblyName>
     <RootNamespace>GNUplot</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Properties\**" />
