@@ -18,6 +18,6 @@ Public Class zzz
         Terminal type is now qt"
 
     Public Shared Sub onLoad()
-        Call Console.WriteLine(gnuplot_welcome)
+        Call VBDebugger.EchoLine(gnuplot_welcome)
     End Sub
 End Class
