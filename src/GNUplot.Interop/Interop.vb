@@ -29,11 +29,9 @@
 Imports System.IO
 
 ''' <summary>
-''' ``gnuplot.exe``
+''' Helper for commandline invoke of ``gnuplot.exe``
 ''' </summary>
 Public Class Interop : Implements IDisposable
-
-    Public Const GNUplotDefault As String = "C:\Program Files (x86)\gnuplot\bin\gnuplot.exe"
 
     Public ReadOnly Property GNUplot As New Process
     ''' <summary>
@@ -43,7 +41,7 @@ Public Class Interop : Implements IDisposable
     Public ReadOnly Property std_in As StreamWriter
 
     ''' <summary>
-    ''' Default: ``<see cref="GNUplotDefault"/>``
+    ''' Default: ``<see cref="GNUplotEnvironment.GetGnuplot()"/>``
     ''' </summary>
     ''' <returns></returns>
     Public ReadOnly Property PathToGnuplot As String
@@ -54,8 +52,8 @@ Public Class Interop : Implements IDisposable
         End Get
     End Property
 
-    Sub New(Optional gnuplot$ = GNUplotDefault)
-        PathToGnuplot = gnuplot
+    Sub New(Optional gnuplot$ = Nothing)
+        PathToGnuplot = If(gnuplot, GNUplotEnvironment.GetGnuplot)
     End Sub
 
     ''' <summary>
