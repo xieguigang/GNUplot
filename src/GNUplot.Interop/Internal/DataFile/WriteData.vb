@@ -27,7 +27,7 @@ Module WriteData
             Case PlotTypes.ColorMapZZ
                 dev.WriteData(p.ZZ, False)
                 dev.WriteLine("e")
-                dev.WriteLine("e")
+                ' dev.WriteLine("e")
         End Select
 
         Call dev.Flush()
