@@ -14,6 +14,7 @@
     <AssemblyName>GNUplot.Interop</AssemblyName>
     <RootNamespace>GNUplot</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
+    <Configurations>Debug;Release;Rsharp_app_release</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Properties\**" />

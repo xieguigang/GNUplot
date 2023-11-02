@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <OutputPath>../../assembly</OutputPath>
     <Platforms>AnyCPU;x64</Platforms>
+    <Configurations>Debug;Release;Rsharp_app_release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
