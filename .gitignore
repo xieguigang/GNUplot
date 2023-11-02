@@ -253,3 +253,4 @@ paket-files/
 .idea/
 *.sln.iml
 .pkg/ggplot.zip
+.pkg/gnuplot.zip
