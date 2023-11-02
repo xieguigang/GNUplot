@@ -28,6 +28,7 @@
 
 Imports System.IO
 Imports System.Runtime.CompilerServices
+Imports Microsoft.VisualBasic.ApplicationServices
 Imports Microsoft.VisualBasic.Language
 
 ''' <summary>
@@ -67,6 +68,14 @@ Public Module GNUplot
 
         Else
             Call $"GNUplot is not avaliable in the default location: {m_gnuplot2.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
+        End If
+    End Sub
+
+    Public Sub SetOutputFile(file As String)
+        If file.StringEmpty Then
+            output = TempFileSystem.GetAppSysTempFile($".{file.ExtensionSuffix.ToLower}", sessionID:="ss_" & App.PID, prefix:="gnuplot_session")
+        Else
+            output = file.GetFullPath
         End If
     End Sub
 

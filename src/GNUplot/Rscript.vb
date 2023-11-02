@@ -1,7 +1,9 @@
 Imports Microsoft.VisualBasic.CommandLine.Reflection
 Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Scripting.MetaData
+Imports SMRUCC.Rsharp.Interpreter.ExecuteEngine.ExpressionSymbols.DataSets
 Imports SMRUCC.Rsharp.Runtime
+Imports SMRUCC.Rsharp.Runtime.Components
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
 
@@ -37,20 +39,14 @@ Public Module Rscript
 
         Dim vx As Double() = CLRVector.asNumeric(x)
         Dim vy As Double() = CLRVector.asNumeric(y)
-        Dim temp_img As String = App.GetTempFile & ".png"
 
-        If Not file.StringEmpty Then
-            file = file.GetFullPath
-            temp_img = file
-        End If
-
-        GNUplot.output = temp_img
+        GNUplot.SetOutputFile(file)
         GNUplot.Plot(vx, vy)
 
         If file.StringEmpty Then
-            Return temp_img.LoadImage
+            Return GNUplot.output.LoadImage
         Else
-            Return temp_img.FileExists
+            Return file.FileExists
         End If
     End Function
 
@@ -59,5 +55,21 @@ Public Module Rscript
                           Optional file As String = Nothing,
                           Optional env As Environment = Nothing) As Object
 
+        Dim splot_str As String
+
+        If TypeOf f Is Literal Then
+            splot_str = DirectCast(f, Literal).ValueStr
+        Else
+            Return Message.InCompatibleType(GetType(String), f.GetType, env)
+        End If
+
+        GNUplot.SetOutputFile(file)
+        GNUplot.SPlot(splot_str)
+
+        If file.StringEmpty Then
+            Return GNUplot.output.LoadImage
+        Else
+            Return file.FileExists
+        End If
     End Function
 End Module
