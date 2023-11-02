@@ -5,13 +5,25 @@
 // ref=GNUplot.Rscript@GNUplot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 
 /**
+ * 
 */
 declare namespace GNUplot {
    /**
+    * config of the gnuplot executable file path
+    * 
+    * 
+     * @param gnuplot the user configed custom gnuplot path location.
    */
    function config(gnuplot: string): boolean;
    /**
-     * @param env default value Is ``null``.
+    * Create x,y scatter plot
+    * 
+    * 
+     * @param x -
+     * @param y -
+     * @param env -
+     * 
+     * + default value Is ``null``.
    */
    function scatter(x: any, y: any, env?: object): any;
 }

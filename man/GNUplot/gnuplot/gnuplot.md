@@ -2,5 +2,5 @@
 
 
 
-+ [config](GNUplot/config.1) 
-+ [scatter](GNUplot/scatter.1) 
++ [config](GNUplot/config.1) config of the gnuplot executable file path
++ [scatter](GNUplot/scatter.1) Create x,y scatter plot
