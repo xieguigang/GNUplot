@@ -96,7 +96,7 @@ Public Module Rscript
         ' set the range for the x,y,z axis and plot (using pointtype triangle and color blue)
         GNUplot.SetOutputFile(file)
         GNUplot.Set(ranges)
-        GNUplot.SPlot(x, y, z, "with points pointtype 8 lc rgb 'blue'")
+        GNUplot.SPlot(vx, vy, vz, "with points pointtype 8 lc rgb 'blue'")
 
         If file.StringEmpty Then
             Return GNUplot.output.LoadImage
