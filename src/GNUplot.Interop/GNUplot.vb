@@ -297,58 +297,10 @@ Public Module GNUplot
     End Sub
 
     Public Sub SPlot(storedPlots As List(Of StoredPlot))
-        ReplotWithSplot = True
-        Dim splot__1 = "splot "
-        Dim plotstring As String = ""
-        Dim defopts As String = ""
+        Dim gnuplot_script As String = Internal.GNUPlotScript.SPlot(storedPlots)
 
-        DataFiles.removeContourLabels(m_gnuplot2.std_in)
-
-        For i As Integer = 0 To storedPlots.Count - 1
-            Dim p = storedPlots(i)
-            defopts = If((p.Options.Length > 0 AndAlso (p.Options.Contains(" w") OrElse p.Options(0) = "w"c)), " ", " with lines ")
-            Select Case p.PlotType
-                Case PlotTypes.SplotFileOrFunction
-                    If p.File IsNot Nothing Then
-                        plotstring += (splot__1 & ScriptGenerator.plotPath(p.File) & defopts & p.Options)
-                    Else
-                        plotstring += (splot__1 & p.[Function] & defopts & p.Options)
-                    End If
-
-                Case PlotTypes.SplotXYZ, PlotTypes.SplotZ
-                    plotstring += (splot__1 & """-"" " & defopts & p.Options)
-
-                Case PlotTypes.SplotZZ
-                    plotstring += (splot__1 & """-"" matrix " & defopts & p.Options)
-
-            End Select
-            If i = 0 Then
-                splot__1 = ", "
-            End If
-        Next
-
-        m_gnuplot2.WriteLine(plotstring)
-
-        For i As Integer = 0 To storedPlots.Count - 1
-            Dim p = storedPlots(i)
-            Select Case p.PlotType
-                Case PlotTypes.SplotXYZ
-                    m_gnuplot2.std_in.WriteData(p.X, p.Y, p.Z, False)
-                    m_gnuplot2.WriteLine("e")
-
-                Case PlotTypes.SplotZZ
-                    m_gnuplot2.std_in.WriteData(p.ZZ, False)
-                    m_gnuplot2.WriteLine("e")
-                    m_gnuplot2.WriteLine("e")
-
-                Case PlotTypes.SplotZ
-                    m_gnuplot2.std_in.WriteData(p.YSize, p.Z, False)
-                    m_gnuplot2.WriteLine("e")
-
-            End Select
-        Next
-
-        m_gnuplot2.Flush()
+        Call m_gnuplot2.WriteLine(gnuplot_script)
+        Call m_gnuplot2.Flush()
     End Sub
 
     Public Sub SaveSetState(Optional filename As String = Nothing)
