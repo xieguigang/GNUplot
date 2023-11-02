@@ -45,35 +45,35 @@ Public Class StoredPlot
     Public Sub New()
     End Sub
 
-    Public Sub New(functionOrfilename As String, Optional options__1 As String = "", Optional plotType__2 As PlotTypes = PlotTypes.PlotFileOrFunction)
+    Public Sub New(functionOrfilename As String, Optional options As String = "", Optional plotType As PlotTypes = PlotTypes.PlotFileOrFunction)
         If IsFile(functionOrfilename) Then
             File = functionOrfilename
         Else
             [Function] = functionOrfilename
         End If
-        Options = options__1
-        PlotType = plotType__2
+        Me.Options = options
+        Me.PlotType = plotType
     End Sub
 
-    Public Sub New(y__1 As Double(), Optional options__2 As String = "")
-        Y = y__1
-        Options = options__2
+    Public Sub New(y As Double(), Optional options As String = "")
+        Me.Y = y
+        Me.Options = options
         PlotType = PlotTypes.PlotY
     End Sub
 
-    Public Sub New(x__1 As Double(), y__2 As Double(), Optional options__3 As String = "")
-        X = x__1
-        Y = y__2
-        Options = options__3
+    Public Sub New(x As Double(), y As Double(), Optional options As String = "")
+        Me.X = x
+        Me.Y = y
+        Me.Options = options
         PlotType = PlotTypes.PlotXY
     End Sub
 
     '3D data
-    Public Sub New(sizeY As Integer, z__1 As Double(), Optional options__2 As String = "", Optional plotType__3 As PlotTypes = PlotTypes.SplotZ)
+    Public Sub New(sizeY As Integer, z As Double(), Optional options As String = "", Optional plotType As PlotTypes = PlotTypes.SplotZ)
         YSize = sizeY
-        Z = z__1
-        Options = options__2
-        PlotType = plotType__3
+        Me.Z = z
+        Me.Options = options
+        Me.PlotType = plotType
     End Sub
 
     Public Sub New(x__1 As Double(), y__2 As Double(), z__3 As Double(), Optional options__4 As String = "", Optional plotType__5 As PlotTypes = PlotTypes.SplotXYZ)

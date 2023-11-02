@@ -49,22 +49,22 @@ Public Module GNUplot
     ''' <summary>
     ''' gnuplot interop services instance.
     ''' </summary>
-    Dim __gnuplot As Interop
+    Dim m_gnuplot As Interop
 
     Public WriteOnly Property call$
         Set(value As String)
-            SyncLock __gnuplot
-                Call __gnuplot.Invoke(value)
+            SyncLock m_gnuplot
+                Call m_gnuplot.Invoke(value)
             End SyncLock
         End Set
     End Property
 
     Sub New()
-        __gnuplot = New Interop()
-        If __gnuplot.Start Then
+        m_gnuplot = New Interop()
+        If m_gnuplot.Start Then
 
         Else
-            Call $"GNUplot is not avaliable in the default location: {__gnuplot.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
+            Call $"GNUplot is not avaliable in the default location: {m_gnuplot.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
         End If
     End Sub
 
@@ -78,29 +78,29 @@ Public Module GNUplot
     ''' </param>
     ''' <returns>The gnuplot services start successfully or not?</returns>
     Public Function Start(gnuplot$) As Boolean
-        __gnuplot = New Interop(gnuplot$)
-        Return __gnuplot.Start
+        m_gnuplot = New Interop(gnuplot$)
+        Return m_gnuplot.Start
     End Function
 
     Public Sub WriteLine(gnuplotcommands As String)
-        __gnuplot.WriteLine(gnuplotcommands)
-        __gnuplot.Flush()
+        m_gnuplot.WriteLine(gnuplotcommands)
+        m_gnuplot.Flush()
     End Sub
 
     Public Sub Write(gnuplotcommands As String)
-        __gnuplot.Write(gnuplotcommands)
-        __gnuplot.Flush()
+        m_gnuplot.Write(gnuplotcommands)
+        m_gnuplot.Flush()
     End Sub
 
     Public Sub [Set](ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
-            __gnuplot.WriteLine("set " & options(i))
+            m_gnuplot.WriteLine("set " & options(i))
         Next
     End Sub
 
     Public Sub Unset(ParamArray options As String())
         For i As Integer = 0 To options.Length - 1
-            __gnuplot.WriteLine("unset " & options(i))
+            m_gnuplot.WriteLine("unset " & options(i))
         Next
     End Sub
 
@@ -355,36 +355,36 @@ Public Module GNUplot
             End If
         Next
 
-        Call __gnuplot.WriteLine(plotstring)
+        Call m_gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
 
             Select Case p.PlotType
                 Case PlotTypes.PlotXY
-                    __gnuplot.std_in.WriteData(p.X, p.Y, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.X, p.Y, False)
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.PlotY
-                    __gnuplot.std_in.WriteData(p.Y, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.Y, False)
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapXYZ
-                    __gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZ
-                    __gnuplot.std_in.WriteData(p.YSize, p.Z, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.YSize, p.Z, False)
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.ColorMapZZ
-                    __gnuplot.std_in.WriteData(p.ZZ, False)
-                    __gnuplot.WriteLine("e")
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.ZZ, False)
+                    m_gnuplot.WriteLine("e")
+                    m_gnuplot.WriteLine("e")
             End Select
         Next
 
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
     End Sub
 
     Public Sub SPlot(storedPlots As List(Of StoredPlot))
@@ -418,28 +418,28 @@ Public Module GNUplot
             End If
         Next
 
-        __gnuplot.WriteLine(plotstring)
+        m_gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             Select Case p.PlotType
                 Case PlotTypes.SplotXYZ
-                    __gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZZ
-                    __gnuplot.std_in.WriteData(p.ZZ, False)
-                    __gnuplot.WriteLine("e")
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.ZZ, False)
+                    m_gnuplot.WriteLine("e")
+                    m_gnuplot.WriteLine("e")
 
                 Case PlotTypes.SplotZ
-                    __gnuplot.std_in.WriteData(p.YSize, p.Z, False)
-                    __gnuplot.WriteLine("e")
+                    m_gnuplot.std_in.WriteData(p.YSize, p.Z, False)
+                    m_gnuplot.WriteLine("e")
 
             End Select
         Next
 
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
     End Sub
 
     Private Function plotPath(path As String) As String
@@ -450,8 +450,8 @@ Public Module GNUplot
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        __gnuplot.WriteLine("save set " & plotPath(filename))
-        __gnuplot.Flush()
+        m_gnuplot.WriteLine("save set " & plotPath(filename))
+        m_gnuplot.Flush()
         waitForFile(filename)
     End Sub
 
@@ -459,8 +459,8 @@ Public Module GNUplot
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        __gnuplot.WriteLine("load " & plotPath(filename))
-        __gnuplot.Flush()
+        m_gnuplot.WriteLine("load " & plotPath(filename))
+        m_gnuplot.Flush()
     End Sub
 
     ''' <summary>
@@ -474,9 +474,9 @@ Public Module GNUplot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        __gnuplot.WriteLine("splot " & fileOrFunction)
+        m_gnuplot.WriteLine("splot " & fileOrFunction)
         Unset("table")
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -486,11 +486,11 @@ Public Module GNUplot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        __gnuplot.WriteLine("splot ""-""")
-        __gnuplot.std_in.WriteData(x, y, z)
-        __gnuplot.WriteLine("e")
+        m_gnuplot.WriteLine("splot ""-""")
+        m_gnuplot.std_in.WriteData(x, y, z)
+        m_gnuplot.WriteLine("e")
         Unset("table")
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -500,12 +500,12 @@ Public Module GNUplot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        __gnuplot.WriteLine("splot ""-"" matrix")
-        __gnuplot.std_in.WriteData(zz)
-        __gnuplot.WriteLine("e")
-        __gnuplot.WriteLine("e")
+        m_gnuplot.WriteLine("splot ""-"" matrix")
+        m_gnuplot.std_in.WriteData(zz)
+        m_gnuplot.WriteLine("e")
+        m_gnuplot.WriteLine("e")
         Unset("table")
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -515,11 +515,11 @@ Public Module GNUplot
         [Set]("table " & plotPath(outputFile))
         [Set]("contour base")
         Unset("surface")
-        __gnuplot.WriteLine("splot ""-""")
-        __gnuplot.std_in.WriteData(sizeY, z)
-        __gnuplot.WriteLine("e")
+        m_gnuplot.WriteLine("splot ""-""")
+        m_gnuplot.std_in.WriteData(sizeY, z)
+        m_gnuplot.WriteLine("e")
         Unset("table")
-        __gnuplot.Flush()
+        m_gnuplot.Flush()
         LoadSetState()
         waitForFile(outputFile)
     End Sub
@@ -531,10 +531,10 @@ Public Module GNUplot
             Dim line As New Value(Of String)
 
             While (line = file.ReadLine()) IsNot Nothing
-                If line.value.Contains("label:") Then
+                If line.Value.Contains("label:") Then
                     Dim c As String() = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(" "c)
-                    __gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
-                    __gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
+                    m_gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
+                    m_gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
                 End If
             End While
         End Using
@@ -542,7 +542,7 @@ Public Module GNUplot
 
     Private Sub removeContourLabels()
         While contourLabelCount > 50000
-            __gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & stdNum.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
+            m_gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & stdNum.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
         End While
     End Sub
 
@@ -562,6 +562,6 @@ Public Module GNUplot
     ''' Close GNUplot main window
     ''' </summary>
     Public Sub Close()
-        __gnuplot.GNUplot.CloseMainWindow()
+        m_gnuplot.GNUplot.CloseMainWindow()
     End Sub
 End Module
