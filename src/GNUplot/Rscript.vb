@@ -53,4 +53,11 @@ Public Module Rscript
             Return temp_img.FileExists
         End If
     End Function
+
+    <ExportAPI("splot")>
+    Public Function splot(<RLazyExpression> f As Object,
+                          Optional file As String = Nothing,
+                          Optional env As Environment = Nothing) As Object
+
+    End Function
 End Module
