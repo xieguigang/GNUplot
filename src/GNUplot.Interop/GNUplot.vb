@@ -288,7 +288,7 @@ Public Module GNUplot
         Dim plotstring As String = ""
 
         If Not output.StringEmpty Then
-            Call [Set]($"output '{output}'")
+            Call [Set]($"output '{output.Replace("\", "/")}'")
         End If
 
         removeContourLabels()
@@ -307,7 +307,7 @@ Public Module GNUplot
         Call m_gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
-            Call WriteData.WritePlotData(storedPlots(i))
+            Call m_gnuplot.Write(WriteData.WritePlotData(storedPlots(i)))
         Next
 
         _output = Nothing

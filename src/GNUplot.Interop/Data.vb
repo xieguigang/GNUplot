@@ -1,28 +1,28 @@
 ﻿#Region "Microsoft.VisualBasic::da75c0205d4064cc6ccf0580e6a993b8, ..\GNUplot\GNUplot\Data.vb"
 
-    ' Author:
-    ' 
-    '       asuka (amethyst.asuka@gcmodeller.org)
-    '       xieguigang (xie.guigang@live.com)
-    '       xie (genetics@smrucc.org)
-    ' 
-    ' Copyright (c) 2016 GPL3 Licensed
-    ' 
-    ' 
-    ' GNU GENERAL PUBLIC LICENSE (GPL3)
-    ' 
-    ' This program is free software: you can redistribute it and/or modify
-    ' it under the terms of the GNU General Public License as published by
-    ' the Free Software Foundation, either version 3 of the License, or
-    ' (at your option) any later version.
-    ' 
-    ' This program is distributed in the hope that it will be useful,
-    ' but WITHOUT ANY WARRANTY; without even the implied warranty of
-    ' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    ' GNU General Public License for more details.
-    ' 
-    ' You should have received a copy of the GNU General Public License
-    ' along with this program. If not, see <http://www.gnu.org/licenses/>.
+' Author:
+' 
+'       asuka (amethyst.asuka@gcmodeller.org)
+'       xieguigang (xie.guigang@live.com)
+'       xie (genetics@smrucc.org)
+' 
+' Copyright (c) 2016 GPL3 Licensed
+' 
+' 
+' GNU GENERAL PUBLIC LICENSE (GPL3)
+' 
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 3 of the License, or
+' (at your option) any later version.
+' 
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+' 
+' You should have received a copy of the GNU General Public License
+' along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #End Region
 
@@ -61,7 +61,7 @@ Public Module Data
     End Function
 
     <Extension>
-    Public Sub WriteData(stream As StreamWriter, ySize As Integer, z As Double(), Optional flush As Boolean = True)
+    Public Sub WriteData(stream As TextWriter, ySize As Integer, z As Double(), Optional flush As Boolean = True)
         For i As Integer = 0 To z.Length - 1
             If i > 0 AndAlso i Mod ySize = 0 Then
                 stream.WriteLine()
@@ -75,7 +75,7 @@ Public Module Data
     End Sub
 
     <Extension>
-    Public Sub WriteData(stream As StreamWriter, zz As Double(,), Optional flush As Boolean = True)
+    Public Sub WriteData(stream As TextWriter, zz As Double(,), Optional flush As Boolean = True)
         Dim m As Integer = zz.GetLength(0)
         Dim n As Integer = zz.GetLength(1)
         Dim line As String
@@ -93,7 +93,7 @@ Public Module Data
     End Sub
 
     <Extension>
-    Public Sub WriteData(stream As StreamWriter, x As Double(), y As Double(), z As Double(), Optional flush As Boolean = True)
+    Public Sub WriteData(stream As TextWriter, x As Double(), y As Double(), z As Double(), Optional flush As Boolean = True)
         Dim m As Integer = Math.Min(x.Length, y.Length)
         m = Math.Min(m, z.Length)
         For i As Integer = 0 To m - 1
@@ -115,7 +115,7 @@ Public Module Data
     ''' <param name="y"></param>
     ''' <param name="flush"></param>
     <Extension>
-    Public Sub WriteData(stream As StreamWriter, y As Double(), Optional flush As Boolean = True)
+    Public Sub WriteData(stream As TextWriter, y As Double(), Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
             stream.WriteLine(y(i).ToString())
         Next
@@ -133,7 +133,7 @@ Public Module Data
     ''' <param name="y"></param>
     ''' <param name="flush"></param>
     <Extension>
-    Public Sub WriteData(stream As StreamWriter, x As Double(), y As Double(), Optional flush As Boolean = True)
+    Public Sub WriteData(stream As TextWriter, x As Double(), y As Double(), Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
             stream.WriteLine(x(i).ToString() & " " & y(i).ToString())
         Next

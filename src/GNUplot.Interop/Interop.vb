@@ -69,6 +69,10 @@ Public Class Interop : Implements IDisposable
         Call std_in.Write(cmd)
     End Sub
 
+    ''' <summary>
+    ''' write line to the gnuplot <see cref="std_in"/>
+    ''' </summary>
+    ''' <param name="cmd$"></param>
     Public Sub WriteLine(cmd$)
         Call std_in.WriteLine(cmd)
     End Sub

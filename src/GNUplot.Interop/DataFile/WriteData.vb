@@ -1,27 +1,37 @@
-﻿Module WriteData
+﻿Imports System.IO
+Imports System.Text
 
-    Public Sub WritePlotData(p As StoredPlot)
+Module WriteData
+
+    Public Function WritePlotData(p As StoredPlot) As String
+        Dim str As New StringBuilder
+        Dim dev As New StringWriter(str)
+
         Select Case p.PlotType
             Case PlotTypes.PlotXY
-                m_gnuplot.std_in.WriteData(p.X, p.Y, False)
-                m_gnuplot.WriteLine("e")
+                dev.WriteData(p.X, p.Y, False)
+                dev.WriteLine("e")
 
             Case PlotTypes.PlotY
-                m_gnuplot.std_in.WriteData(p.Y, False)
-                m_gnuplot.WriteLine("e")
+                dev.WriteData(p.Y, False)
+                dev.WriteLine("e")
 
             Case PlotTypes.ColorMapXYZ
-                m_gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
-                m_gnuplot.WriteLine("e")
+                dev.WriteData(p.X, p.Y, p.Z, False)
+                dev.WriteLine("e")
 
             Case PlotTypes.ColorMapZ
-                m_gnuplot.std_in.WriteData(p.YSize, p.Z, False)
-                m_gnuplot.WriteLine("e")
+                dev.WriteData(p.YSize, p.Z, False)
+                dev.WriteLine("e")
 
             Case PlotTypes.ColorMapZZ
-                m_gnuplot.std_in.WriteData(p.ZZ, False)
-                m_gnuplot.WriteLine("e")
-                m_gnuplot.WriteLine("e")
+                dev.WriteData(p.ZZ, False)
+                dev.WriteLine("e")
+                dev.WriteLine("e")
         End Select
-    End Sub
+
+        Call dev.Flush()
+
+        Return str.ToString
+    End Function
 End Module
