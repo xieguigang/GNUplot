@@ -108,15 +108,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj">
+    <ProjectReference Include="..\..\..\..\sciBASIC#\Microsoft.VisualBasic.Core\src\Core.vbproj">
       <Project>{2e058020-0b17-4ac3-aabb-cb7b5827d341}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\GNUPlot.Extensions\GNUPlot.Extensions.vbproj">
+    <ProjectReference Include="..\..\GNUPlot.Extensions\GNUPlot.Extensions.vbproj">
       <Project>{dcc7eb3c-4a3e-4ad6-a4f7-39e8c6ef130f}</Project>
       <Name>GNUPlot.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\GNUplot\GNUplot.vbproj">
+    <ProjectReference Include="..\GNUplot.vbproj">
       <Project>{99d9b8fd-620f-4bf7-b2ea-0416754d8178}</Project>
       <Name>GNUplot</Name>
     </ProjectReference>
