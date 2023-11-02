@@ -24,17 +24,33 @@ Public Module Rscript
     ''' </summary>
     ''' <param name="x"></param>
     ''' <param name="y"></param>
+    ''' <param name="file">
+    ''' the output filename
+    ''' </param>
     ''' <param name="env"></param>
     ''' <returns></returns>
     <ExportAPI("scatter")>
-    Public Function scatter(<RRawVectorArgument> x As Object, <RRawVectorArgument> y As Object, Optional env As Environment = Nothing) As Object
+    Public Function scatter(<RRawVectorArgument> x As Object,
+                            <RRawVectorArgument> y As Object,
+                            Optional file As String = Nothing,
+                            Optional env As Environment = Nothing) As Object
+
         Dim vx As Double() = CLRVector.asNumeric(x)
         Dim vy As Double() = CLRVector.asNumeric(y)
         Dim temp_img As String = App.GetTempFile & ".png"
 
+        If Not file.StringEmpty Then
+            file = file.GetFullPath
+            temp_img = file
+        End If
+
         GNUplot.output = temp_img
         GNUplot.Plot(vx, vy)
 
-        Return temp_img.LoadImage
+        If file.StringEmpty Then
+            Return temp_img.LoadImage
+        Else
+            Return temp_img.FileExists
+        End If
     End Function
 End Module

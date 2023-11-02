@@ -21,9 +21,12 @@ declare namespace GNUplot {
     * 
      * @param x -
      * @param y -
+     * @param file the output filename
+     * 
+     * + default value Is ``null``.
      * @param env -
      * 
      * + default value Is ``null``.
    */
-   function scatter(x: any, y: any, env?: object): any;
+   function scatter(x: any, y: any, file?: string, env?: object): any;
 }
