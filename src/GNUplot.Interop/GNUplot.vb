@@ -49,7 +49,7 @@ Public Module GNUplot
     ''' <summary>
     ''' gnuplot interop services instance.
     ''' </summary>
-    Friend m_gnuplot As Interop
+    Dim m_gnuplot2 As Interop
 
     ''' <summary>
     ''' the output image filepath
