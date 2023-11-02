@@ -29,4 +29,9 @@ declare namespace GNUplot {
      * + default value Is ``null``.
    */
    function scatter(x: any, y: any, file?: string, env?: object): any;
+   /**
+     * @param file default value Is ``null``.
+     * @param env default value Is ``null``.
+   */
+   function splot(f: any, file?: string, env?: object): any;
 }
