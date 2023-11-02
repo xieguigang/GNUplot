@@ -108,6 +108,12 @@ Public Module Data
         End If
     End Sub
 
+    ''' <summary>
+    ''' write vector y
+    ''' </summary>
+    ''' <param name="stream"></param>
+    ''' <param name="y"></param>
+    ''' <param name="flush"></param>
     <Extension>
     Public Sub WriteData(stream As StreamWriter, y As Double(), Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
@@ -119,6 +125,13 @@ Public Module Data
         End If
     End Sub
 
+    ''' <summary>
+    ''' write [x,y] scatter data
+    ''' </summary>
+    ''' <param name="stream"></param>
+    ''' <param name="x"></param>
+    ''' <param name="y"></param>
+    ''' <param name="flush"></param>
     <Extension>
     Public Sub WriteData(stream As StreamWriter, x As Double(), y As Double(), Optional flush As Boolean = True)
         For i As Integer = 0 To y.Length - 1
