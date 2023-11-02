@@ -49,7 +49,7 @@ Public Module GNUplot
     ''' <summary>
     ''' gnuplot interop services instance.
     ''' </summary>
-    Dim m_gnuplot As Interop
+    Friend m_gnuplot As Interop
 
     ''' <summary>
     ''' the output image filepath
@@ -286,8 +286,6 @@ Public Module GNUplot
         ReplotWithSplot = False
         Dim plot__1 As String = "plot "
         Dim plotstring As String = ""
-        Dim contfile As String
-        Dim defcntopts As String
 
         If Not output.StringEmpty Then
             Call [Set]($"output '{output}'")
@@ -297,65 +295,10 @@ Public Module GNUplot
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
-            defcntopts = If((p.Options.Length > 0 AndAlso (p.Options.Contains(" w") OrElse p.Options(0) = "w"c)), " ", " with lines ")
+            Dim sw As New ScriptGenerator()
 
-            Select Case p.PlotType
-                Case PlotTypes.PlotFileOrFunction
-                    If p.File IsNot Nothing Then
-                        plotstring += (plot__1 & plotPath(p.File) & " " & p.Options)
-                    Else
-                        plotstring += (plot__1 & p.[Function] & " " & p.Options)
-                    End If
+            Call sw.Push(p, plot__1, i)
 
-                Case PlotTypes.PlotXY, PlotTypes.PlotY
-                    plotstring += (plot__1 & """-"" " & p.Options)
-
-                Case PlotTypes.ContourFileOrFunction
-                    contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
-                    makeContourFile((If(p.File IsNot Nothing, plotPath(p.File), p.[Function])), contfile)
-                    If p.LabelContours Then
-                        setContourLabels(contfile)
-                    End If
-                    plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-
-                Case PlotTypes.ContourXYZ
-                    contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
-                    makeContourFile(p.X, p.Y, p.Z, contfile)
-                    If p.LabelContours Then
-                        setContourLabels(contfile)
-                    End If
-                    plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-
-                Case PlotTypes.ContourZZ
-                    contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
-                    makeContourFile(p.ZZ, contfile)
-                    If p.LabelContours Then
-                        setContourLabels(contfile)
-                    End If
-                    plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-
-                Case PlotTypes.ContourZ
-                    contfile = Path.GetTempPath() & "_cntrtempdata" & i & ".dat"
-                    makeContourFile(p.YSize, p.Z, contfile)
-                    If p.LabelContours Then
-                        setContourLabels(contfile)
-                    End If
-                    plotstring += (plot__1 & plotPath(contfile) & defcntopts & p.Options)
-
-                Case PlotTypes.ColorMapFileOrFunction
-                    If p.File IsNot Nothing Then
-                        plotstring += (plot__1 & plotPath(p.File) & " with image " & p.Options)
-                    Else
-                        plotstring += (plot__1 & p.[Function] & " with image " & p.Options)
-                    End If
-
-                Case PlotTypes.ColorMapXYZ, PlotTypes.ColorMapZ
-                    plotstring += (plot__1 & """-"" " & " with image " & p.Options)
-
-                Case PlotTypes.ColorMapZZ
-                    plotstring += (plot__1 & """-"" " & "matrix with image " & p.Options)
-
-            End Select
             If i = 0 Then
                 plot__1 = ", "
             End If
@@ -364,30 +307,7 @@ Public Module GNUplot
         Call m_gnuplot.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
-            Dim p = storedPlots(i)
-
-            Select Case p.PlotType
-                Case PlotTypes.PlotXY
-                    m_gnuplot.std_in.WriteData(p.X, p.Y, False)
-                    m_gnuplot.WriteLine("e")
-
-                Case PlotTypes.PlotY
-                    m_gnuplot.std_in.WriteData(p.Y, False)
-                    m_gnuplot.WriteLine("e")
-
-                Case PlotTypes.ColorMapXYZ
-                    m_gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
-                    m_gnuplot.WriteLine("e")
-
-                Case PlotTypes.ColorMapZ
-                    m_gnuplot.std_in.WriteData(p.YSize, p.Z, False)
-                    m_gnuplot.WriteLine("e")
-
-                Case PlotTypes.ColorMapZZ
-                    m_gnuplot.std_in.WriteData(p.ZZ, False)
-                    m_gnuplot.WriteLine("e")
-                    m_gnuplot.WriteLine("e")
-            End Select
+            Call WriteData.WritePlotData(storedPlots(i))
         Next
 
         _output = Nothing
@@ -408,7 +328,7 @@ Public Module GNUplot
             Select Case p.PlotType
                 Case PlotTypes.SplotFileOrFunction
                     If p.File IsNot Nothing Then
-                        plotstring += (splot__1 & plotPath(p.File) & defopts & p.Options)
+                        plotstring += (splot__1 & ScriptGenerator.plotPath(p.File) & defopts & p.Options)
                     Else
                         plotstring += (splot__1 & p.[Function] & defopts & p.Options)
                     End If
@@ -449,15 +369,11 @@ Public Module GNUplot
         m_gnuplot.Flush()
     End Sub
 
-    Private Function plotPath(path As String) As String
-        Return """" & path.Replace("\", "\\") & """"
-    End Function
-
     Public Sub SaveSetState(Optional filename As String = Nothing)
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        m_gnuplot.WriteLine("save set " & plotPath(filename))
+        m_gnuplot.WriteLine("save set " & ScriptGenerator.plotPath(filename))
         m_gnuplot.Flush()
         waitForFile(filename)
     End Sub
@@ -466,85 +382,8 @@ Public Module GNUplot
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        m_gnuplot.WriteLine("load " & plotPath(filename))
+        m_gnuplot.WriteLine("load " & ScriptGenerator.plotPath(filename))
         m_gnuplot.Flush()
-    End Sub
-
-    ''' <summary>
-    ''' these makecontourFile functions should probably be merged into one function and use a StoredPlot parameter
-    ''' </summary>
-    ''' <param name="fileOrFunction"></param>
-    ''' <param name="outputFile"></param>
-    Private Sub makeContourFile(fileOrFunction As String, outputFile As String)
-        'if it's a file, fileOrFunction needs quotes and escaped backslashes
-        SaveSetState()
-        [Set]("table " & plotPath(outputFile))
-        [Set]("contour base")
-        Unset("surface")
-        m_gnuplot.WriteLine("splot " & fileOrFunction)
-        Unset("table")
-        m_gnuplot.Flush()
-        LoadSetState()
-        waitForFile(outputFile)
-    End Sub
-
-    Private Sub makeContourFile(x As Double(), y As Double(), z As Double(), outputFile As String)
-        SaveSetState()
-        [Set]("table " & plotPath(outputFile))
-        [Set]("contour base")
-        Unset("surface")
-        m_gnuplot.WriteLine("splot ""-""")
-        m_gnuplot.std_in.WriteData(x, y, z)
-        m_gnuplot.WriteLine("e")
-        Unset("table")
-        m_gnuplot.Flush()
-        LoadSetState()
-        waitForFile(outputFile)
-    End Sub
-
-    Private Sub makeContourFile(zz As Double(,), outputFile As String)
-        SaveSetState()
-        [Set]("table " & plotPath(outputFile))
-        [Set]("contour base")
-        Unset("surface")
-        m_gnuplot.WriteLine("splot ""-"" matrix")
-        m_gnuplot.std_in.WriteData(zz)
-        m_gnuplot.WriteLine("e")
-        m_gnuplot.WriteLine("e")
-        Unset("table")
-        m_gnuplot.Flush()
-        LoadSetState()
-        waitForFile(outputFile)
-    End Sub
-
-    Private Sub makeContourFile(sizeY As Integer, z As Double(), outputFile As String)
-        SaveSetState()
-        [Set]("table " & plotPath(outputFile))
-        [Set]("contour base")
-        Unset("surface")
-        m_gnuplot.WriteLine("splot ""-""")
-        m_gnuplot.std_in.WriteData(sizeY, z)
-        m_gnuplot.WriteLine("e")
-        Unset("table")
-        m_gnuplot.Flush()
-        LoadSetState()
-        waitForFile(outputFile)
-    End Sub
-
-    Dim contourLabelCount As Integer = 50000
-
-    Private Sub setContourLabels(contourFile As String)
-        Using file As New StreamReader(contourFile)
-            Dim line As New Value(Of String)
-
-            While (line = file.ReadLine()) IsNot Nothing
-                If line.Value.Contains("label:") Then
-                    Dim c As String() = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(" "c)
-                    m_gnuplot.WriteLine("set object " & Interlocked.Increment(contourLabelCount) & " rectangle center " & c(0) & "," & c(1) & " size char " & (c(2).ToString().Length + 1) & ",char 1 fs transparent solid .7 noborder fc rgb ""white""  front")
-                    m_gnuplot.WriteLine("set label " & contourLabelCount & " """ & c(2) & """ at " & c(0) & "," & c(1) & " front center")
-                End If
-            End While
-        End Using
     End Sub
 
     Private Sub removeContourLabels()
