@@ -1,4 +1,5 @@
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.ComponentModel.Ranges.Model
 Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports SMRUCC.Rsharp.Interpreter.ExecuteEngine.ExpressionSymbols.DataSets
@@ -65,6 +66,37 @@ Public Module Rscript
 
         GNUplot.SetOutputFile(file)
         GNUplot.SPlot(splot_str)
+
+        If file.StringEmpty Then
+            Return GNUplot.output.LoadImage
+        Else
+            Return file.FileExists
+        End If
+    End Function
+
+    <ExportAPI("pointCloud")>
+    Public Function pointCloud(<RRawVectorArgument> x As Object,
+                               <RRawVectorArgument> y As Object,
+                               <RRawVectorArgument> z As Object,
+                               Optional file As String = Nothing,
+                               Optional env As Environment = Nothing) As Object
+
+        Dim vx = CLRVector.asNumeric(x)
+        Dim vy = CLRVector.asNumeric(y)
+        Dim vz = CLRVector.asNumeric(z)
+        Dim rx As DoubleRange = vx.Range(1.25)
+        Dim ry As DoubleRange = vy.Range(1.25)
+        Dim rz As DoubleRange = vz.Range(1.25)
+        Dim ranges As String() = {
+            $"xrange[{rx.Min}:{rx.Max}]",
+            $"yrange[{ry.Min}:{ry.Max}]",
+            $"zrange[{rz.Min}:{rz.Max}]"
+        }
+
+        ' set the range for the x,y,z axis and plot (using pointtype triangle and color blue)
+        GNUplot.SetOutputFile(file)
+        GNUplot.Set(ranges)
+        GNUplot.SPlot(x, y, z, "with points pointtype 8 lc rgb 'blue'")
 
         If file.StringEmpty Then
             Return GNUplot.output.LoadImage
