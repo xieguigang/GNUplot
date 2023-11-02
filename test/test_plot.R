@@ -8,4 +8,4 @@ let y = [-4, 6.5, -2, 3, -8, -5, 11, 4, -5, 10];
 
 GNUplot::scatter(x,y, file = "./test.png");
 
-pause();
+# pause();
