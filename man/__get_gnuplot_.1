@@ -1,0 +1,15 @@
+﻿.TH __GET_GNUPLOT_ 1 2023-Nov "" "Get the executable file path of the gnuplot program"
+.SH NAME
+__get_gnuplot_ \- __get_gnuplot_()
+.SH SYNOPSIS
+\fI__get_gnuplot_()\fR
+.SH DETAILS
+.PP
+the function returns different file path location between the windows platform and the centos platform, 1. for windows, this function always returns the package built-in re-distribution of gnuplot program 2. for centos, this function always returns the file path location: ``/usr/bin/gnuplot``, as this file path location is the default install location of the gnuplot on centos with ``yum install gnuplot`` command.
+.PP
+.SH FILES
+.PP
+SMRUCC/R#.declare_function.__get_gnuplot_ at env.R:line 14
+.PP
+.SH COPYRIGHT
+Copyright © xieguigang, MIT Licensed 2023

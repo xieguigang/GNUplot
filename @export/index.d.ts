@@ -8,4 +8,7 @@ declare namespace gnuplot {
       */
       function onLoad(): object;
    }
+   /**
+   */
+   function __get_gnuplot_(): object;
 }
