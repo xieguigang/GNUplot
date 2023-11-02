@@ -28,9 +28,7 @@
 
 Imports System.IO
 Imports System.Runtime.CompilerServices
-Imports System.Threading
 Imports Microsoft.VisualBasic.Language
-Imports std = System.Math
 
 ''' <summary>
 ''' Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. 
@@ -43,7 +41,8 @@ Public Module GNUplot
 
     Private PlotBuffer As New List(Of StoredPlot)
     Private SPlotBuffer As New List(Of StoredPlot)
-    Private ReplotWithSplot As Boolean
+
+    Friend ReplotWithSplot As Boolean
 
     Public Property Hold As Boolean = False
 
@@ -62,12 +61,12 @@ Public Module GNUplot
     Public Property output As String
 
     Sub New()
-        m_gnuplot = New Interop()
+        m_gnuplot2 = New Interop()
 
-        If m_gnuplot.Start Then
+        If m_gnuplot2.Start Then
 
         Else
-            Call $"GNUplot is not avaliable in the default location: {m_gnuplot.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
+            Call $"GNUplot is not avaliable in the default location: {m_gnuplot2.PathToGnuplot.ToFileURL}, please manual setup the gnuplot.exe later.".Warning
         End If
     End Sub
 
@@ -81,18 +80,18 @@ Public Module GNUplot
     ''' </param>
     ''' <returns>The gnuplot services start successfully or not?</returns>
     Public Function Start(gnuplot$) As Boolean
-        m_gnuplot = New Interop(gnuplot$)
-        Return m_gnuplot.Start
+        m_gnuplot2 = New Interop(gnuplot$)
+        Return m_gnuplot2.Start
     End Function
 
     Public Sub WriteLine(gnuplotcommands As String)
-        m_gnuplot.WriteLine(gnuplotcommands)
-        m_gnuplot.Flush()
+        m_gnuplot2.WriteLine(gnuplotcommands)
+        m_gnuplot2.Flush()
     End Sub
 
     Public Sub Write(gnuplotcommands As String)
-        m_gnuplot.Write(gnuplotcommands)
-        m_gnuplot.Flush()
+        m_gnuplot2.Write(gnuplotcommands)
+        m_gnuplot2.Flush()
     End Sub
 
     <MethodImpl(MethodImplOptions.AggressiveInlining)>
@@ -280,36 +279,10 @@ Public Module GNUplot
         SPlot(SPlotBuffer)
     End Sub
 
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Sub Plot(storedPlots As List(Of StoredPlot))
-        ReplotWithSplot = False
-        Dim plot__1 As String = "plot "
-        Dim plotstring As String = ""
-
-        If Not output.StringEmpty Then
-            Call [Set]($"output '{output.Replace("\", "/")}'")
-        End If
-
-        removeContourLabels()
-
-        For i As Integer = 0 To storedPlots.Count - 1
-            Dim p = storedPlots(i)
-            Dim sw As New ScriptGenerator()
-
-            Call sw.Push(p, plot__1, i)
-
-            If i = 0 Then
-                plot__1 = ", "
-            End If
-        Next
-
-        Call m_gnuplot.WriteLine(plotstring)
-
-        For i As Integer = 0 To storedPlots.Count - 1
-            Call m_gnuplot.Write(WriteData.WritePlotData(storedPlots(i)))
-        Next
-
-        _output = Nothing
-        m_gnuplot.Flush()
+        Call m_gnuplot2.WriteLine(Internal.GNUPlotScript.Plot(storedPlots))
+        Call m_gnuplot2.Flush()
     End Sub
 
     Public Sub SPlot(storedPlots As List(Of StoredPlot))
@@ -318,7 +291,7 @@ Public Module GNUplot
         Dim plotstring As String = ""
         Dim defopts As String = ""
 
-        removeContourLabels()
+        DataFiles.removeContourLabels(m_gnuplot2.std_in)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
@@ -343,36 +316,36 @@ Public Module GNUplot
             End If
         Next
 
-        m_gnuplot.WriteLine(plotstring)
+        m_gnuplot2.WriteLine(plotstring)
 
         For i As Integer = 0 To storedPlots.Count - 1
             Dim p = storedPlots(i)
             Select Case p.PlotType
                 Case PlotTypes.SplotXYZ
-                    m_gnuplot.std_in.WriteData(p.X, p.Y, p.Z, False)
-                    m_gnuplot.WriteLine("e")
+                    m_gnuplot2.std_in.WriteData(p.X, p.Y, p.Z, False)
+                    m_gnuplot2.WriteLine("e")
 
                 Case PlotTypes.SplotZZ
-                    m_gnuplot.std_in.WriteData(p.ZZ, False)
-                    m_gnuplot.WriteLine("e")
-                    m_gnuplot.WriteLine("e")
+                    m_gnuplot2.std_in.WriteData(p.ZZ, False)
+                    m_gnuplot2.WriteLine("e")
+                    m_gnuplot2.WriteLine("e")
 
                 Case PlotTypes.SplotZ
-                    m_gnuplot.std_in.WriteData(p.YSize, p.Z, False)
-                    m_gnuplot.WriteLine("e")
+                    m_gnuplot2.std_in.WriteData(p.YSize, p.Z, False)
+                    m_gnuplot2.WriteLine("e")
 
             End Select
         Next
 
-        m_gnuplot.Flush()
+        m_gnuplot2.Flush()
     End Sub
 
     Public Sub SaveSetState(Optional filename As String = Nothing)
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        m_gnuplot.WriteLine("save set " & ScriptGenerator.plotPath(filename))
-        m_gnuplot.Flush()
+        m_gnuplot2.WriteLine("save set " & ScriptGenerator.plotPath(filename))
+        m_gnuplot2.Flush()
         waitForFile(filename)
     End Sub
 
@@ -380,14 +353,8 @@ Public Module GNUplot
         If filename Is Nothing Then
             filename = Path.GetTempPath() & "setstate.tmp"
         End If
-        m_gnuplot.WriteLine("load " & ScriptGenerator.plotPath(filename))
-        m_gnuplot.Flush()
-    End Sub
-
-    Private Sub removeContourLabels()
-        While contourLabelCount > 50000
-            m_gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & std.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
-        End While
+        m_gnuplot2.WriteLine("load " & ScriptGenerator.plotPath(filename))
+        m_gnuplot2.Flush()
     End Sub
 
     Public Sub HoldOn()
@@ -406,6 +373,6 @@ Public Module GNUplot
     ''' Close GNUplot main window
     ''' </summary>
     Public Sub Close()
-        m_gnuplot.GNUplot.CloseMainWindow()
+        m_gnuplot2.GNUplot.CloseMainWindow()
     End Sub
 End Module

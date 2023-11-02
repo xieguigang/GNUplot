@@ -1,10 +1,17 @@
 ﻿Imports System.IO
 Imports System.Threading
 Imports Microsoft.VisualBasic.Language
+Imports std = System.Math
 
 Module DataFiles
 
     Friend contourLabelCount As Integer = 50000
+
+    Friend Sub removeContourLabels(gnuplot_s As TextWriter)
+        While contourLabelCount > 50000
+            gnuplot_s.WriteLine("unset object " & contourLabelCount & ";unset label " & std.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
+        End While
+    End Sub
 
     Friend Sub setContourLabels(contourFile As String, gnuplot As TextWriter)
         Using file As New StreamReader(contourFile)
