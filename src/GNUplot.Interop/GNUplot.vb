@@ -51,13 +51,14 @@ Public Module GNUplot
     ''' </summary>
     Dim m_gnuplot As Interop
 
-    Public WriteOnly Property [call] As String
-        Set(value As String)
-            SyncLock m_gnuplot
-                Call m_gnuplot.Invoke(value)
-            End SyncLock
-        End Set
-    End Property
+    ''' <summary>
+    ''' the output image filepath
+    ''' </summary>
+    ''' <returns></returns>
+    ''' <remarks>
+    ''' set output 'epslatex.tex'
+    ''' </remarks>
+    Public Property output As String
 
     Sub New()
         m_gnuplot = New Interop()
@@ -288,6 +289,10 @@ Public Module GNUplot
         Dim contfile As String
         Dim defcntopts As String
 
+        If Not output.StringEmpty Then
+            Call [Set]($"output '{output}'")
+        End If
+
         removeContourLabels()
 
         For i As Integer = 0 To storedPlots.Count - 1
@@ -385,6 +390,7 @@ Public Module GNUplot
             End Select
         Next
 
+        _output = Nothing
         m_gnuplot.Flush()
     End Sub
 

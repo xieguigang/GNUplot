@@ -1,4 +1,5 @@
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Interop
@@ -29,8 +30,11 @@ Public Module Rscript
     Public Function scatter(<RRawVectorArgument> x As Object, <RRawVectorArgument> y As Object, Optional env As Environment = Nothing) As Object
         Dim vx As Double() = CLRVector.asNumeric(x)
         Dim vy As Double() = CLRVector.asNumeric(y)
+        Dim temp_img As String = App.GetTempFile & ".png"
 
-        Call GNUplot.Plot(vx, vy)
+        GNUplot.output = temp_img
+        GNUplot.Plot(vx, vy)
 
+        Return temp_img.LoadImage
     End Function
 End Module
