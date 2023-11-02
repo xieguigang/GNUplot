@@ -76,27 +76,27 @@ Public Class StoredPlot
         Me.PlotType = plotType
     End Sub
 
-    Public Sub New(x__1 As Double(), y__2 As Double(), z__3 As Double(), Optional options__4 As String = "", Optional plotType__5 As PlotTypes = PlotTypes.SplotXYZ)
-        If x__1.Length < 2 Then
+    Public Sub New(x As Double(), y As Double(), z As Double(), Optional options As String = "", Optional plotType As PlotTypes = PlotTypes.SplotXYZ)
+        If x.Length < 2 Then
             YSize = 1
         Else
-            For YSize = 1 To x__1.Length - 1
-                If x__1(YSize) <> x__1(YSize - 1) Then
+            For YSize = 1 To x.Length - 1
+                If x(YSize) <> x(YSize - 1) Then
                     Exit For
                 End If
             Next
         End If
-        Z = z__3
-        Y = y__2
-        X = x__1
-        Options = options__4
-        PlotType = plotType__5
+        Me.Z = z
+        Me.Y = y
+        Me.X = x
+        Me.Options = options
+        Me.PlotType = plotType
     End Sub
 
-    Public Sub New(zz__1 As Double(,), Optional options__2 As String = "", Optional plotType__3 As PlotTypes = PlotTypes.SplotZZ)
-        ZZ = zz__1
-        Options = options__2
-        PlotType = plotType__3
+    Public Sub New(zz As Double(,), Optional options As String = "", Optional plotType As PlotTypes = PlotTypes.SplotZZ)
+        Me.ZZ = zz
+        Me.Options = options
+        Me.PlotType = plotType
     End Sub
 
     Private Function IsFile(functionOrFilename As String) As Boolean
