@@ -1,6 +1,6 @@
-# gnuplot
+# GNUplot
 
 
 
-+ [config](gnuplot/config.1) 
-+ [scatter](gnuplot/scatter.1) 
++ [config](GNUplot/config.1) 
++ [scatter](GNUplot/scatter.1) 

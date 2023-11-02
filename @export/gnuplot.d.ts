@@ -1,12 +1,12 @@
 ﻿// export R# package module type define for javascript/typescript language
 //
-//    imports "gnuplot" from "GNUplot";
+//    imports "GNUplot" from "GNUplot";
 //
 // ref=GNUplot.Rscript@GNUplot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
 
 /**
 */
-declare namespace gnuplot {
+declare namespace GNUplot {
    /**
    */
    function config(gnuplot: string): boolean;

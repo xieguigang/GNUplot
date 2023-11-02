@@ -4,7 +4,7 @@ Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
 
-<Package("gnuplot")>
+<Package("GNUplot")>
 Public Module Rscript
 
     ''' <summary>
