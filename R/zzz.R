@@ -1,6 +1,6 @@
-imports "gnuplot" from "GNUplot";
+imports "GNUplot" from "GNUplot";
 
 const .onLoad = function() {
-    gnuplot::config(__get_gnuplot_());
+    GNUplot::config(__get_gnuplot_());
 }
 

@@ -1,4 +1,4 @@
-# gnuplot
+# GNUplot
 
 
 
