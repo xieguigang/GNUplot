@@ -1,10 +1,12 @@
 Imports Microsoft.VisualBasic.CommandLine.Reflection
+Imports Microsoft.VisualBasic.ComponentModel.Collection
 Imports Microsoft.VisualBasic.ComponentModel.Ranges.Model
 Imports Microsoft.VisualBasic.Imaging
 Imports Microsoft.VisualBasic.Scripting.MetaData
 Imports SMRUCC.Rsharp.Interpreter.ExecuteEngine.ExpressionSymbols.DataSets
 Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Components
+Imports SMRUCC.Rsharp.Runtime.Internal.[Object]
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
 
@@ -20,6 +22,34 @@ Public Module Rscript
     Public Function config(gnuplot As String) As Boolean
         GNUplotEnvironment.Config = gnuplot
         Return True
+    End Function
+
+    <ExportAPI("heatmap")>
+    Public Function heatmap(x As Object,
+                            Optional file As String = Nothing,
+                            Optional env As Environment = Nothing) As Object
+
+        Dim z As Double()()
+
+        If TypeOf x Is dataframe Then
+            Dim df As dataframe = x
+            Dim rows = df.forEachRow.ToArray
+
+            z = rows _
+                .Select(Function(r) CLRVector.asNumeric(r.value)) _
+                .ToArray
+        Else
+            Return Message.InCompatibleType(GetType(dataframe), x.GetType, env)
+        End If
+
+        GNUplot.SetOutputFile(file)
+        GNUplot.HeatMap(z.ToMatrix)
+
+        If file.StringEmpty Then
+            Return GNUplot.output.LoadImage
+        Else
+            Return file.FileExists
+        End If
     End Function
 
     ''' <summary>
