@@ -4,8 +4,8 @@ Imports SMRUCC.Rsharp.Runtime
 Imports SMRUCC.Rsharp.Runtime.Interop
 Imports SMRUCC.Rsharp.Runtime.Vectorization
 
-<Package("GNUplot")>
-Public Class Rscript
+<Package("gnuplot")>
+Public Module Rscript
 
     ''' <summary>
     ''' config of the gnuplot executable file path
@@ -33,4 +33,4 @@ Public Class Rscript
         Call GNUplot.Plot(vx, vy)
 
     End Function
-End Class
+End Module
