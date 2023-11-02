@@ -1,4 +1,6 @@
-﻿<Assembly: RPackageModule>
+﻿Imports SMRUCC.Rsharp.Runtime.Interop
+
+<Assembly: RPackageModule>
 
 Public Class zzz
 
@@ -16,6 +18,6 @@ Public Class zzz
         Terminal type is now qt"
 
     Public Shared Sub onLoad()
-
+        Call Console.WriteLine(gnuplot_welcome)
     End Sub
 End Class

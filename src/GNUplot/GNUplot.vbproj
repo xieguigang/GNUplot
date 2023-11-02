@@ -3,6 +3,7 @@
   <PropertyGroup>
     <RootNamespace>GNUplot</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <OutputPath>../../assembly</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
