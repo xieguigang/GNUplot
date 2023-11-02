@@ -16,7 +16,11 @@ Namespace Internal
             Dim gnuplot_str As String = Nothing
 
             If Not output.StringEmpty Then
-                Call Options.[Set](gnuplot_s, $"output '{output.Replace("\", "/")}'")
+                ' set terminal png
+                ' set output 'image.png'
+
+                Call Options.[Set](gnuplot_s, $"terminal {output.ExtensionSuffix.ToLower}")
+                Call Options.[Set](gnuplot_s, $"output '{output.Replace("\", "/").Replace("//", "/")}'")
             End If
 
             DataFiles.removeContourLabels(gnuplot_s)
@@ -39,6 +43,9 @@ Namespace Internal
             For i As Integer = 0 To storedPlots.Count - 1
                 Call gnuplot_s.Write(WriteData.WritePlotData(storedPlots(i)))
             Next
+
+            ' flush and close the image file in gnuplot
+            Options.Set(gnuplot_s, "output")
 
             output = Nothing
             gnuplot_s.Flush()
