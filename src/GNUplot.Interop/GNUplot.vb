@@ -281,7 +281,9 @@ Public Module GNUplot
 
     <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Sub Plot(storedPlots As List(Of StoredPlot))
-        Call m_gnuplot2.WriteLine(Internal.GNUPlotScript.Plot(storedPlots))
+        Dim gnuplot_script As String = Internal.GNUPlotScript.Plot(storedPlots)
+
+        Call m_gnuplot2.WriteLine(gnuplot_script)
         Call m_gnuplot2.Flush()
     End Sub
 
