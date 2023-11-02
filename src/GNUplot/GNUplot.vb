@@ -29,7 +29,7 @@
 Imports System.IO
 Imports System.Threading
 Imports Microsoft.VisualBasic.Language
-Imports stdNum = System.Math
+Imports std = System.Math
 
 ''' <summary>
 ''' Gnuplot is a portable command-line driven graphing utility for Linux, OS/2, MS Windows, OSX, VMS, and many other platforms. 
@@ -51,7 +51,7 @@ Public Module GNUplot
     ''' </summary>
     Dim m_gnuplot As Interop
 
-    Public WriteOnly Property call$
+    Public WriteOnly Property [call] As String
         Set(value As String)
             SyncLock m_gnuplot
                 Call m_gnuplot.Invoke(value)
@@ -61,6 +61,7 @@ Public Module GNUplot
 
     Sub New()
         m_gnuplot = New Interop()
+
         If m_gnuplot.Start Then
 
         Else
@@ -542,7 +543,7 @@ Public Module GNUplot
 
     Private Sub removeContourLabels()
         While contourLabelCount > 50000
-            m_gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & stdNum.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
+            m_gnuplot.WriteLine("unset object " & contourLabelCount & ";unset label " & std.Max(Interlocked.Decrement(contourLabelCount), contourLabelCount + 1))
         End While
     End Sub
 
