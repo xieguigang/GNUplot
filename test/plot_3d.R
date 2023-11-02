@@ -7,3 +7,4 @@ let y = runif(100, -50, 50);
 let z = runif(100, -20, 20);
 
 GNUplot::pointCloud(x,y,z, file = "./pointCloud.png");
+GNUplot::surface(x,y,z, file = "./surface.png")

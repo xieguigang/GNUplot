@@ -104,4 +104,37 @@ Public Module Rscript
             Return file.FileExists
         End If
     End Function
+
+    <ExportAPI("surface")>
+    Public Function surface(<RRawVectorArgument> x As Object,
+                            <RRawVectorArgument> y As Object,
+                            <RRawVectorArgument> z As Object,
+                            Optional file As String = Nothing,
+                            Optional env As Environment = Nothing) As Object
+
+        Dim vx = CLRVector.asNumeric(x)
+        Dim vy = CLRVector.asNumeric(y)
+        Dim vz = CLRVector.asNumeric(z)
+        Dim rx As DoubleRange = vx.Range(1.25)
+        Dim ry As DoubleRange = vy.Range(1.25)
+        Dim rz As DoubleRange = vz.Range(1.25)
+        Dim ranges As String() = {
+            $"xrange[{rx.Min}:{rx.Max}]",
+            $"yrange[{ry.Min}:{ry.Max}]",
+            $"zrange[{rz.Min}:{rz.Max}]"
+        }
+
+        ' fit the points to a surface grid of 40x40 with smoothing level 2
+        GNUplot.Set("dgrid3d 40,40,2")
+        GNUplot.SetOutputFile(file)
+        ' set the range for the x,y,z axis and plot (using pm3d to map height to color)
+        GNUplot.Set(ranges)
+        GNUplot.SPlot(vx, vy, vz, "with pm3d")
+
+        If file.StringEmpty Then
+            Return GNUplot.output.LoadImage
+        Else
+            Return file.FileExists
+        End If
+    End Function
 End Module
