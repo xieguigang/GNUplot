@@ -27,6 +27,7 @@
 #End Region
 
 Imports System.IO
+Imports System.Runtime.CompilerServices
 Imports System.Threading
 Imports Microsoft.VisualBasic.Language
 Imports std = System.Math
@@ -94,16 +95,13 @@ Public Module GNUplot
         m_gnuplot.Flush()
     End Sub
 
+    <MethodImpl(MethodImplOptions.AggressiveInlining)>
     Public Sub [Set](ParamArray options As String())
-        For i As Integer = 0 To options.Length - 1
-            m_gnuplot.WriteLine("set " & options(i))
-        Next
+        Call Internal.Options.Set(m_gnuplot2.std_in, options)
     End Sub
 
     Public Sub Unset(ParamArray options As String())
-        For i As Integer = 0 To options.Length - 1
-            m_gnuplot.WriteLine("unset " & options(i))
-        Next
+        Call Internal.Options.Unset(m_gnuplot2.std_in, options)
     End Sub
 
     Public Function SaveData(Y As Double(), filename As String) As Boolean
